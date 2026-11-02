@@ -9,3 +9,8 @@ debug.log
 
 # macOS
 .DS_Store
+
+# Windows
+windows/bin/
+windows/obj/
+windows/.vs/

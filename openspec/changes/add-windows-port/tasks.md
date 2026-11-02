@@ -2,7 +2,7 @@
 
 ## 1. Prueba de reproducción (puerta: detenerse si falla)
 
-- [ ] 1.1 Crear en `windows/` un proyecto WPF mínimo con un WebView2 que abra `https://www.dazn.com/` y una solución que Visual Studio pueda abrir; verificar con `dotnet build` en PowerShell y compilando la solución en Visual Studio, sin errores en ambas vías (solo se puede verificar en Windows).
+- [x] 1.1 Crear en `windows/` un proyecto WPF mínimo con un WebView2 que abra `https://www.dazn.com/` y una solución que Visual Studio pueda abrir; verificar con `dotnet build` en PowerShell y compilando la solución en Visual Studio, sin errores en ambas vías (solo se puede verificar en Windows).
 - [ ] 1.2 Iniciar sesión y reproducir un partido; anotar en `design.md` si hay audio y video, la calidad máxima y cualquier error; verificar que el resultado queda escrito. **Si no reproduce, detenerse aquí**, documentar el resultado en `ROADMAP.md` y no seguir con los grupos siguientes (solo se puede verificar en Windows).
 
 ## 2. Ventana
