@@ -3,6 +3,11 @@
 **Nota:** Todas las fechas están en zona horaria CST de Ciudad de México (UTC-6).
 
 <!-- markdownlint-disable MD013 MD024 MD022 MD032 -->
+## [2026-11-01] - Prueba de reproducción en Windows
+
+- feat: agrega proyecto WPF con WebView2 en windows/ para la prueba de reproducción de DAZN
+- docs: documenta los resultados de la prueba de reproducción y las versiones del entorno en design.md
+
 ## [2026-10-18] - Primera versión de DAZNer, visor nativo de DAZN con WebKit
 
 - docs: agrega `COWBOYS.md`, una nota personal del autor sobre por qué existe el proyecto: su afición a los Cowboys, el *rack* del domingo y el *display* ultraancho 32:9
