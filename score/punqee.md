@@ -1,6 +1,6 @@
 # Evaluación del reto: Punqee
 
-*Última modificación: 7 de noviembre de 2026, 17:22 (CST)*
+*Última modificación: 7 de noviembre de 2026, 17:31 (CST)*
 
 Revisión de la entrega de Míriam ([@Punqee](https://github.com/Punqee)) al [reto de contribución](../CHALLENGE.md), hecha por el mantenedor con Claude Code (Opus 5.5) en una máquina con Windows. Registra lo que se ejecutó, lo que se observó y una propuesta de calificación con los criterios del reto.
 
@@ -65,7 +65,7 @@ El PR incrusta una imagen (1894×1067, JPEG) y dice además haber enviado una fo
 
 - **A favor:** es una foto real de celular (Samsung Galaxy S24 según sus metadatos; tiene muaré), en horizontal, tomada el 31 de octubre de 2026. Muestra la ventana «DAZNer Windows» corriendo desde Visual Studio, con su barra de depuración de XAML, lo que respalda la compilación en Visual Studio que pide la tarea 1.1.
 - **En contra:** **no muestra ninguna reproducción.** Se ve la portada de DAZN con un cartel promocional estático de un evento de MMA, no un partido de la NFL ni un video con sus controles. En la barra superior aparece el botón «Suscribir», que DAZN suele mostrar cuando la cuenta no tiene una suscripción activa.
-- **Conclusión:** la foto prueba que la aplicación abre DAZN, no que el DRM reproduzca. El reto permite no tener suscripción, siempre que se declare y la reproducción se valide con una página de demostración de DRM. El PR, en cambio, afirma una «reproducción continua con audio y video en alta definición» de un partido de la NFL. La participante ya aclaró al mantenedor por WhatsApp (3 de noviembre) que probó con su propia cuenta de DAZN, de acceso limitado, con partidos gratuitos. Eso es válido; solo falta que lo declare en el PR y en `design.md`.
+- **Conclusión:** la foto prueba que la aplicación abre DAZN, no que el DRM reproduzca. El reto permite no tener suscripción, siempre que se declare y la reproducción se valide con una página de demostración de DRM. El PR, en cambio, afirma una «reproducción continua con audio y video en alta definición» de un partido de la NFL. La participante ya aclaró al mantenedor que probó con su propia cuenta de DAZN, de acceso limitado, con partidos gratuitos. Eso es válido; solo falta que lo declare en el PR y en `design.md`.
 
 ## Observaciones
 
@@ -98,14 +98,14 @@ El PR incrusta una imagen (1894×1067, JPEG) y dice además haber enviado una fo
 
 ## Calificación propuesta
 
-Propuesta del mantenedor, sujeta a la respuesta de la participante sobre la evidencia. Escala de 0 a 10 por criterio, ponderada con los pesos de CHALLENGE.md.
+Propuesta del mantenedor. Califica la entrega tal como se presentó en el PR. Escala de 0 a 10 por criterio, ponderada con los pesos de CHALLENGE.md.
 
 | Criterio | Peso | Calificación | Motivo |
 |---|---|---|---|
 | Disciplina SDD | 30 % | 7 | Sigue el cambio ya propuesto y marca solo las tareas del grupo 1. Faltan las respuestas que el reto exige para Windows y la bitácora con su formato. |
 | Compila en otra máquina sin intervención | 25 % | 4 | Compila sin advertencias, pero requiere el SDK de .NET 10, que no está documentado, y no hay instrucciones de compilación. |
 | Calidad de los PR y de los *commits* | 20 % | 7 | Pasa todas las puertas de `check-pr.sh` y tiene *commits* atómicos y bien descritos. El cuerpo del PR no se ve con formato y el CHANGELOG es escueto. |
-| Honestidad | 15 % | 5 | No afirma nada fuera del grupo 1 e incluye la declaración de cuenta. La evidencia no muestra la reproducción que se afirma, la calidad no se midió, OpenSpec se marca como validado sin que se pueda comprobar y «Riesgos: ninguno» no cuadra. |
+| Honestidad | 15 % | 5 | No afirma nada fuera del grupo 1 e incluye la declaración de cuenta. La evidencia no muestra la reproducción que se afirma, la calidad no se midió, OpenSpec se marca como validado sin que se pueda comprobar y «Riesgos: ninguno» no cuadra. Su aclaración posterior (cuenta propia de acceso limitado, con partidos gratuitos) explica la evidencia, pero no cambia la nota: el PR afirmaba otra cosa y no lo declaró. |
 | Calidad técnica | 10 % | 6 | Proyecto mínimo y correcto para una prueba, pero con un espacio de nombres inventado, nombres genéricos y restos de la plantilla. |
 | **Total ponderado** | | **5.9 / 10** | |
 
@@ -181,8 +181,8 @@ Tu Git de Windows suele convertir los archivos a CRLF, y eso ensucia el reposito
 - **Antes de cada *commit*,** corre `git diff --check` y `git status`: solo deben aparecer los cambios que hiciste.
 - **Antes de subir,** comprueba estas dos cosas:
   - `git ls-files --eol | findstr "i/crlf"` no debe mostrar ningún archivo.
-  - `git diff upstream/main --stat` debe mostrar solo tus archivos de `windows/` y los de tu cambio.
-- **Si un archivo que no tocaste aparece modificado,** no lo subas: normalmente son finales de línea. Repite el paso 4 de la sección anterior.
+  - `git diff upstream/main --stat` debe mostrar solo tus archivos de `windows/`, los de tu cambio en `openspec/changes/add-windows-port/` y `CHANGELOG.md`.
+- **Si un archivo que no tocaste aparece modificado,** no lo subas: normalmente son finales de línea. Para ese archivo basta con `git restore -- <archivo>`, que lo vuelve a escribir con las reglas de `.gitattributes` y descarta lo que tenga sin guardar. Si son muchos, repite el paso 4 de la sección anterior, pero **antes haz un *commit* o un `git stash` de tu trabajo**: `git reset --hard` borra todo lo que no esté guardado.
 
 ## Entorno del mantenedor
 
