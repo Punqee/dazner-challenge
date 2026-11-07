@@ -1,6 +1,6 @@
 # Evaluación del reto: Punqee
 
-*Última modificación: 7 de noviembre de 2026, 17:12 (CST)*
+*Última modificación: 7 de noviembre de 2026, 17:22 (CST)*
 
 Revisión de la entrega de Míriam ([@Punqee](https://github.com/Punqee)) al [reto de contribución](../CHALLENGE.md), hecha por el mantenedor con Claude Code (Opus 5.5) en una máquina con Windows. Registra lo que se ejecutó, lo que se observó y una propuesta de calificación con los criterios del reto.
 
@@ -21,7 +21,7 @@ Revisión de la entrega de Míriam ([@Punqee](https://github.com/Punqee)) al [re
 
 - **`check-pr.sh`** (copia de `rules` en `%USERPROFILE%\rules`, al día con `origin/main`), corrido con `--base main` contra la rama del PR: pasan las 16 comprobaciones. *Commits* en Conventional Commits y en inglés, viñetas desde la columna 1, `Co-Authored-By` en cada *commit*, `CHANGELOG.md` solo en el último *commit* y solo con líneas añadidas, fechas en orden y sin archivos ajenos.
 - **OpenSpec:** sin validar. La máquina del mantenedor no tiene Node ni npx y `check-pr.sh` lo reporta como aviso. La lista de verificación del PR marca `openspec validate --all --strict` como aprobado, pero eso no se pudo comprobar.
-- **GitHub Actions:** el flujo `PR checks` no corrió sobre `9094e7a`; el *commit* no tiene ninguna ejecución registrada. Lo más probable es que GitHub esté esperando que el mantenedor apruebe la ejecución, porque es la primera contribución de esa cuenta. Queda pendiente.
+- **GitHub Actions:** la ejecución del flujo `PR checks` sobre `9094e7a` está retenida (`action_required`) hasta que el mantenedor la apruebe, porque es la primera contribución de esa cuenta. Es a propósito: se aprueba cuando el PR esté completo y no requiere nada de la participante.
 
 ## Compilación sin intervención
 
@@ -65,7 +65,7 @@ El PR incrusta una imagen (1894×1067, JPEG) y dice además haber enviado una fo
 
 - **A favor:** es una foto real de celular (Samsung Galaxy S24 según sus metadatos; tiene muaré), en horizontal, tomada el 31 de octubre de 2026. Muestra la ventana «DAZNer Windows» corriendo desde Visual Studio, con su barra de depuración de XAML, lo que respalda la compilación en Visual Studio que pide la tarea 1.1.
 - **En contra:** **no muestra ninguna reproducción.** Se ve la portada de DAZN con un cartel promocional estático de un evento de MMA, no un partido de la NFL ni un video con sus controles. En la barra superior aparece el botón «Suscribir», que DAZN suele mostrar cuando la cuenta no tiene una suscripción activa.
-- **Conclusión:** la foto prueba que la aplicación abre DAZN, no que el DRM reproduzca. El reto permite no tener suscripción, siempre que se declare y la reproducción se valide con una página de demostración de DRM. El PR, en cambio, afirma una «reproducción continua con audio y video en alta definición» de un partido de la NFL. Hay que pedir a la participante la foto que envió por el canal privado, o que aclare si tiene una suscripción con NFL Game Pass.
+- **Conclusión:** la foto prueba que la aplicación abre DAZN, no que el DRM reproduzca. El reto permite no tener suscripción, siempre que se declare y la reproducción se valide con una página de demostración de DRM. El PR, en cambio, afirma una «reproducción continua con audio y video en alta definición» de un partido de la NFL. La participante ya aclaró al mantenedor por WhatsApp (3 de noviembre) que probó con su propia cuenta de DAZN, de acceso limitado, con partidos gratuitos. Eso es válido; solo falta que lo declare en el PR y en `design.md`.
 
 ## Observaciones
 
@@ -115,11 +115,11 @@ Propuesta del mantenedor, sujeta a la respuesta de la participante sobre la evid
 - **El PR es una buena base** para el camino de Windows: no rompe nada y sus archivos respetan la codificación y los finales de línea del repositorio. Se integra cuando atienda la revisión y esté al día con `main` (ver la sección siguiente).
 - **Todavía no hay *referral*:** el reto lo condiciona a compilar y arrancar sin intervención.
 - **Qué se le pide a la participante** si continúa:
-  1. La foto que envió por el canal privado, o una declaración de si tiene suscripción con NFL Game Pass.
-  2. Documentar el SDK de .NET 10 y el *runtime* de WebView2 en una sección de requisitos del README y en la bitácora de `design.md`, con su formato.
-  3. Responder en `design.md` las preguntas de Windows que exige el reto. Incluye actualizar la pregunta abierta sobre `.gitattributes`, que ya existe en `main`.
-  4. Corregir `xmlns:d`, quitar los `using` sobrantes y renombrar el proyecto a `DAZNer`.
-  5. Quitar la sangría del cuerpo del PR y corregir «Riesgos».
+  1. Documentar el SDK de .NET 10 y el *runtime* de WebView2 en una sección de requisitos del README y en la bitácora de `design.md`, con su formato.
+  2. Responder en `design.md` las preguntas de Windows que exige el reto. Incluye actualizar la pregunta abierta sobre `.gitattributes`, que ya existe en `main`.
+  3. Corregir `xmlns:d`, quitar los `using` sobrantes y renombrar el proyecto a `DAZNer`.
+  4. Quitar la sangría del cuerpo del PR y corregir «Riesgos».
+  5. Declarar en el PR (sección «Decisiones») y en `design.md` que probó con su propia cuenta de DAZN, de acceso limitado y con partidos gratuitos, y qué contenido reprodujo. Si tiene la foto del canal privado, la adjunta al PR.
 
 ## Cómo atender esta revisión
 
@@ -127,12 +127,14 @@ Las correcciones **no se hacen a mano en el código**. La regla 1 de [CHALLENGE.
 
 1. **Integra la revisión en tu cambio de OpenSpec.** Corre `/opsx:update add-windows-port` y usa este archivo como entrada. Ese comando solo revisa los artefactos del cambio (`proposal.md`, `design.md`, `tasks.md` y la especificación de `platform-windows`) y no toca código. Si tu herramienta no tiene el comando, pídele a tu IA que siga el procedimiento de `.claude/skills/openspec-update-change/SKILL.md`.
 2. **Qué va en cada artefacto:**
-   - **`design.md`:** las respuestas a las preguntas de Windows del reto (punto 3 de la lista anterior) y la bitácora de problemas con su formato, incluido el SDK de .NET 10 y el *runtime* de WebView2.
-   - **`tasks.md`:** una tarea, con su verificación, por cada corrección de código (punto 4) y por la sección de requisitos del README.
+   - **`design.md`:** las respuestas a las preguntas de Windows del reto (punto 2 de la lista anterior) y la bitácora de problemas con su formato, incluido el SDK de .NET 10 y el *runtime* de WebView2.
+   - **`tasks.md`:** una tarea, con su verificación, por cada corrección de código (punto 3) y por la sección de requisitos del README.
    - **`proposal.md` y la especificación:** solo si una corrección cambia lo que el cambio promete.
 3. **Valida** con `openspec validate --all --strict` antes de tocar el código.
 4. **Aplica el código** con `/opsx:apply add-windows-port`, o siguiendo las tareas en orden si tu herramienta no lo tiene, y marca cada tarea solo cuando ejecutes su verificación.
 5. **Todo se sube a tu misma rama**, en el mismo PR, con *commits* atómicos. Este archivo no se modifica.
+
+**Lo que no puedas probar.** Hay tareas que dependen de contenido de NFL Game Pass, como la pantalla completa con cuatro videos (tarea 4.2), o de algo que tu cuenta no permite. Esas tareas se quedan **sin marcar** (`- [ ]`), se anotan en la sección «Qué no se probó» del PR y las verifica el mantenedor con su cuenta, en su equipo. Marcar una tarea que no ejecutaste cuenta como falta de honestidad, y declarar lo que no pudiste probar no te resta puntos.
 
 Si algo de `design.md` contradice a `AGENTS.md` (por ejemplo, el uso de Git desde WSL), manda `AGENTS.md`: el autor trabaja ahora con Git desde Windows nativo y `.gitattributes` ya existe.
 
@@ -168,6 +170,19 @@ Después de la revisión, `main` avanzó: trae un `.gitattributes` que fija los 
    ```
 
    El PR #5 se actualiza solo. `--force-with-lease` es válido únicamente en tu rama de PR, nunca en `main`.
+
+## Finales de línea y codificación: lo que debes cuidar siempre
+
+Tu Git de Windows suele convertir los archivos a CRLF, y eso ensucia el repositorio con cambios que no son tuyos. El repositorio ya trae `.gitattributes` y `.editorconfig` para evitarlo; solo tienes que respetarlos:
+
+- **No definas `core.autocrlf` ni borres `.gitattributes`.** El repositorio guarda todo en LF, sin importar esa configuración.
+- **El `.sln` es la única excepción visible:** en tu disco queda en CRLF y en el repositorio en LF. Es lo esperado y no es un error.
+- **Los `.cs`, `.xaml` y `.ps1` van en UTF-8 con BOM** y el resto en UTF-8 sin BOM, como fija `.editorconfig`. No uses «Guardar como» con otra codificación ni reescribas archivos completos desde el editor.
+- **Antes de cada *commit*,** corre `git diff --check` y `git status`: solo deben aparecer los cambios que hiciste.
+- **Antes de subir,** comprueba estas dos cosas:
+  - `git ls-files --eol | findstr "i/crlf"` no debe mostrar ningún archivo.
+  - `git diff upstream/main --stat` debe mostrar solo tus archivos de `windows/` y los de tu cambio.
+- **Si un archivo que no tocaste aparece modificado,** no lo subas: normalmente son finales de línea. Repite el paso 4 de la sección anterior.
 
 ## Entorno del mantenedor
 
