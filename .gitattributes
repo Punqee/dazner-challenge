@@ -1,0 +1,22 @@
+# Finales de línea fijos, sin importar core.autocrlf: el repositorio se armó en macOS, git se usa
+# desde WSL y se compila desde Windows, cuyo Git trae core.autocrlf=true. Con «eol» explícito,
+# todos los entornos escriben lo mismo en disco y nadie ve archivos modificados solo por CRLF.
+# Coincide con .editorconfig, que fija los mismos finales de línea al editar.
+
+# Todo el texto en LF, en el repositorio y en disco
+*             text=auto eol=lf
+
+# Scripts siempre en LF: con CRLF fallan en WSL, Linux y macOS ($'\r': command not found)
+*.sh          text eol=lf
+*.py          text eol=lf
+*.ps1         text eol=lf
+
+# Visual Studio y cmd.exe esperan CRLF en disco; en el repositorio se guardan en LF
+*.sln         text eol=crlf
+*.bat         text eol=crlf
+*.cmd         text eol=crlf
+
+# Binarios: sin conversión ni diff de texto
+*.png         binary
+*.icns        binary
+*.ico         binary
