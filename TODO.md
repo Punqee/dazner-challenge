@@ -32,14 +32,26 @@ Prioridad si hay que elegir: Windows, luego Qt, luego GTK.
 - [ ] **Archivar cada cambio terminado** con `/opsx:archive` y registrarlo con `/changelogger` y `/commit`.
 - [ ] **Actualizar el README** con el estado, los requisitos y la compilación de cada plataforma nueva.
 
+## Pendientes encontrados en la revisión
+
+Salieron de la revisión del 7 de noviembre de 2026. Se atienden en un cambio propio y se verifican en la plataforma que se indica.
+
+### En macOS
+
+- [ ] **La ventana puede salirse de la pantalla al abrir el segundo panel:** `resizeWindow` duplica el ancho y conserva `minX`, así que la ventana cerca del borde derecho queda a medias fuera. Recorrerla a la izquierda solo cuando no quepa, sin cambiar su tamaño. Verificar con ⌘2 y la ventana pegada al borde derecho.
+- [ ] **`Info.plist` permite HTTP sin cifrar** (`NSAllowsArbitraryLoads`) aunque DAZN usa solo HTTPS, y no declara `LSMinimumSystemVersion`, aunque `isInspectable` exige macOS 13.3. Verificar que DAZN inicia sesión y reproduce sin esa excepción.
+
+### En Windows, al construir la pantalla completa (grupo 4 de `add-windows-port`)
+
+- [ ] **`fill-fullscreen.js` dispara `fullscreenchange` dos veces en `document`:** una directa y otra que sube desde el elemento. WebKit lo tolera; comprobar que Chromium (WebView2) también.
+- [ ] **El `MutationObserver` del *script* vigila `class` pero no `style`:** si React reescribe el estilo en línea, se pierden los márgenes con `!important`. Es la primera sospecha si reaparece el margen del *multiview*. Cualquier cambio al *script* exige repetir la verificación en macOS.
+
 ## Preguntas abiertas
 
 - ¿Qué versión LTS de .NET usar en Windows, y distribuir como carpeta comprimida o como MSIX?
-- ¿Dónde vive el clon que se compila en Windows: en el sistema de archivos de WSL o en una ruta de Windows?
 - ¿Qué origen de Qt WebEngine con códecs propietarios usar en Linux (paquete de la distribución, instalador de Qt u otro)?
 - ¿AppImage o Flatpak para Linux?
 - ¿Qué calidad máxima da WebView2 frente a Chrome, y Widevine en Linux frente a macOS? Lo miden las pruebas de reproducción.
-- ¿Hace falta un `.gitattributes`? Por ahora no: el problema confirmado es de codificación y lo resuelve `.editorconfig`.
 
 ## Hecho
 
@@ -49,4 +61,5 @@ Prioridad si hay que elegir: Windows, luego Qt, luego GTK.
 - [x] Hoja de ruta, con los lenguajes nativos por plataforma y los datos confirmados sobre el DRM.
 - [x] OpenSpec: siete especificaciones base de macOS y cuatro cambios propuestos.
 - [x] `AGENTS.md` y `.editorconfig`.
+- [x] `.gitattributes` con finales de línea fijos (LF, y CRLF en `.sln`, `.bat` y `.cmd`), sin importar `core.autocrlf`: Git de Windows trae `core.autocrlf=true` y reescribía los archivos en CRLF.
 - [x] Extracción del *script* de pantalla completa a `shared/fill-fullscreen.js` (fase 1): macOS lo carga desde el paquete y se verificó con el modo `--debug`.
