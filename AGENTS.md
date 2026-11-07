@@ -1,6 +1,6 @@
 # Guía para agentes
 
-*Última modificación: 18 de octubre de 2026, 20:05 (CST)*
+*Última modificación: 7 de noviembre de 2026, 15:49 (CST)*
 
 Este archivo es para un agente de IA que trabaja en este repositorio, sobre todo si lo clonó en Windows o Linux para construir una de las versiones pendientes. El autor mantiene un repositorio de reglas personales (`rules`) con las *skills* de trabajo (`/commit`, `/changelogger`, `/git-init`, `/licensing`) y sus procedimientos. Está presente en sus máquinas con Linux, en WSL y en Windows, así que **si existe, manda sobre el resumen de este archivo**; este archivo recoge lo esencial por si no está.
 
@@ -68,7 +68,7 @@ Esto explica por qué el script de pantalla completa es como es. No lo reinvente
 - **Hueco entre videos:** 4 px de la cuadrícula más 2 px de borde por celda a cada lado, es decir, 8 px entre videos. Se midió de 1280×720 a 2478×1394. Con dos paneles se deja 8 px dentro del ancho de la ventana para conservar la proporción 32:9.
 - **Cambiar el tamaño de la ventana refresca el panel:** DAZN rehace el reproductor. Por eso, al abrir el segundo panel, la ventana cambia primero y el primer panel conserva su tamaño.
 - **La barra gris del borde derecho en pantalla completa** es el panel de estadísticas de DAZN. No es un error.
-- Una captura de pantalla de un video con DRM sale en negro; no sirve para diagnosticar. La evidencia que se acepta son fotos de celular en horizontal (ver `CHALLENGE.md`); no se usan videos ni capturadoras de video, porque estas últimas eluden el DRM.
+- Una captura de pantalla de un video con DRM sale en negro en macOS (FairPlay); no sirve para diagnosticar. En Windows con WebView2 (Widevine por *software*) una captura puede no salir negra, pero tampoco prueba que el DRM funcione, porque no distingue un video protegido de uno sin protección. La evidencia que se acepta son fotos de celular en horizontal (ver `CHALLENGE.md`); no se usan videos ni capturadoras de video, porque estas últimas eluden el DRM.
 
 ## Depuración
 
@@ -88,23 +88,25 @@ Qué usar de ahí, si existe:
 
 - **Flujo de trabajo:** `/changelogger` y `/commit` (procedimientos en `cot/changelog.md` y `cot/committing.md`), y `/git-init` y `/licensing` para configurar un repositorio nuevo.
 - **Estilo del español:** `rulesets/LINGUISTICS.md`.
-- **Rutas:** las *skills* escriben `~/rules/...`. En Windows nativo hay que resolver esa ruta con la ubicación de la tabla. Algunas piezas (`scripts/commit_trailer.py`, scripts de `bash`) necesitan Python o un *shell* de tipo Unix; en Windows funcionan mejor desde WSL.
+- **Rutas:** las *skills* escriben `~/rules/...`. En Windows nativo hay que resolver esa ruta con la ubicación de la tabla. Algunas piezas (`scripts/commit_trailer.py`, scripts de `bash`) necesitan Python o un *shell* de tipo Unix; en Windows nativo se usan con Python para Windows y con Git Bash.
 - **Si no existe `rules`:** seguir el resumen de la sección siguiente y avisar al usuario de que falta.
 
 ## Flujo de trabajo en Windows
 
-El autor usa **dos entornos a la vez** en la misma máquina con Windows:
+El autor trabaja todo desde **Windows nativo**: el control de versiones, la compilación y las pruebas.
 
-- **Git, siempre desde WSL.** Git de Windows mete ruido de caracteres, así que `git`, `/changelogger` y `/commit` se ejecutan en WSL, donde existe `~/rules`. No ejecutes `git` desde PowerShell ni desde Visual Studio.
+- **Git, desde Windows** (Git para Windows, con Git Bash o PowerShell). Antes se usaba solo desde WSL, porque Git de Windows, con su `core.autocrlf=true`, reescribía los archivos en CRLF; `.gitattributes` lo resuelve (ver «Codificación»). `/changelogger` y `/commit` leen `rules` de `%USERPROFILE%\rules` y corren `commit_trailer.py` con Python para Windows.
+- **Identidad y SSH por repositorio:** la copia se configura con `/git-init personal incognia git@github.com:incognia/dazner.git main`, que deja en `.git/config` la identidad personal, el remoto en SSH y `core.sshCommand` con la llave `incognia`. Esa ruta de la llave (`/c/Users/...`) es la de Git para Windows: como WSL comparte el mismo `.git/config`, un `git push` desde WSL fallaría.
 - **Compilar y probar, desde Windows nativo**, con Visual Studio (abriendo la solución de `windows/`) o con PowerShell (`dotnet build`, o el `build.ps1` que se añada). WPF y WebView2 solo se ejecutan en Windows.
 - **Codificación:** todo el repositorio es UTF-8. En Windows, muchos programas y consolas usan Windows-1252 (la «ANSI» de Windows, parecida a ISO-8859-1), y eso corrompe acentos, «», ñ y símbolos como ⌘. Reglas:
   - `.editorconfig` fija UTF-8 y LF para todo, y UTF-8 con BOM para `.cs`, `.xaml` y `.ps1`, porque Windows PowerShell 5.1 lee un script sin BOM como ANSI. Respétalo.
+  - `.gitattributes` fija los finales de línea en git, sin importar `core.autocrlf` (Git de Windows lo trae en `true`): LF para todo y CRLF en disco para `.sln`, `.bat` y `.cmd`. No lo cambies ni definas `core.autocrlf` para este repositorio.
   - Los mensajes de `windows/build.ps1` van en ASCII, sin acentos, por robustez.
   - En Windows PowerShell 5.1, `>` y `Out-File` escriben UTF-16 y `Set-Content` escribe ANSI: no los uses para archivos del repositorio, o pasa `-Encoding utf8`.
   - La consola de Windows puede mostrar mal el UTF-8; no es un cambio del archivo. Se arregla con `chcp 65001` o con `[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()`.
-  - No reescribas archivos completos desde Windows, para no ensuciar el historial; git desde WSL evita el resto del problema.
+  - No reescribas archivos completos desde Windows, para no ensuciar el historial con cambios de codificación. Antes de un *commit*, `git diff --check` y `git status` deben mostrar solo los cambios que hiciste.
 
-Si eres un agente que corre en WSL, puedes editar archivos y usar `git`, pero la compilación y la prueba de reproducción de la versión de Windows las hace el usuario en Windows nativo; no afirmes que compilaron si no lo viste.
+Si eres un agente que corre en WSL, puedes editar archivos y hacer *commits*, pero no `git push` (ver «Identidad y SSH por repositorio»), y la compilación y la prueba de reproducción de la versión de Windows se hacen en Windows nativo; no afirmes que compilaron si no lo viste.
 
 ## Idioma, *commits* y CHANGELOG
 
@@ -114,6 +116,6 @@ Resumen de lo esencial; si `rules` está disponible, sus procedimientos prevalec
 - **Mensajes de *commit*:** inglés internacional (UK), formato Conventional Commits (`feat`, `fix`, `docs`, `refactor`, `chore`), con un cuerpo de viñetas que describa cambios concretos. *Commits* atómicos: un cambio lógico cada uno, con `git add -- <archivos>` y sin `git add .` cuando se mezclan tipos.
 - **No mencionar el CHANGELOG** en el cuerpo de un *commit*.
 - **CHANGELOG.md:** un bloque por fecha, `## [AAAA-MM-DD] - Título descriptivo`, con la fecha en hora del centro de México (UTC-6). Viñetas `tipo: descripción en español`, sin subencabezados, con la más reciente arriba, sin líneas en blanco entre viñetas y solo añadiendo (no se editan viñetas existentes). El `CHANGELOG.md` va en el último *commit* de cada serie.
-- **Identidad de Git:** la del autor ya está configurada en su máquina. No cambies `user.name`, `user.email` ni el remoto. Si falta, pide la identidad al usuario.
+- **Identidad de Git:** la del autor se configura por repositorio con `/git-init`. No cambies `user.name`, `user.email` ni el remoto por tu cuenta. Si falta, pide al usuario que corra `/git-init` o que te dé la identidad.
 - **Publicar:** no hagas `git push` sin que el usuario lo haya pedido.
 - **Pull requests:** un PR que no pase `check-pr.sh` se rechaza sin revisar el código. El *script* vive en el repositorio de reglas (`~/rules/scripts/check-pr.sh`, con la *skill* `/pr-check` y las reglas en `~/rules/rulesets/PR_CHECK.md`); este repositorio solo aporta su configuración en `.github/pr-check.conf`. Córrelo antes de abrirlo: `~/rules/scripts/check-pr.sh --base origin/main` (con `bash`; en Windows, desde WSL o Git Bash). Comprueba el formato de los *commits*, las reglas del CHANGELOG, que no haya archivos ajenos y que OpenSpec valide. Usa la plantilla de `.github/PULL_REQUEST_TEMPLATE.md` y no quites ninguna de sus secciones. Las reglas se aplican con tu propio entorno e identidad: lo que se revisa es el resultado, no la herramienta.

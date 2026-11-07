@@ -1,6 +1,6 @@
 # Reto de contribución
 
-*Última modificación: 18 de octubre de 2026, 19:46 (CST)*
+*Última modificación: 7 de noviembre de 2026, 15:30 (CST)*
 
 Este documento describe un reto abierto para quien quiera demostrar cómo trabaja con inteligencia artificial en un proyecto real: construir una de las versiones pendientes de DAZNer con **desarrollo guiado por especificaciones** (*spec-driven development*, SDD) y no con *vibe coding*. Sirve para cualquier persona y cualquier herramienta de IA. El mantenedor usa este mismo documento para probar el flujo de *pull requests* del proyecto.
 
@@ -132,7 +132,7 @@ En el PR, resume esa bitácora en las secciones «Qué no se probó», «Decisio
 
 ## Evidencia
 
-Las capturas de pantalla de un video con DRM salen en negro y no sirven. La evidencia de que algo funciona son **fotos de cómo se ve la pantalla**, tomadas con un celular:
+Las capturas de pantalla no sirven: en macOS un video con DRM sale en negro, y en Windows una captura puede verse bien sin probar nada, porque no distingue un video protegido de uno sin protección. La evidencia de que algo funciona son **fotos de cómo se ve la pantalla**, tomadas con un celular:
 
 | Aceptado | Condiciones |
 |---|---|
@@ -207,7 +207,7 @@ Si tu PR compila y arranca sin intervención, y cumple las demás reglas, **el m
 - ***Commit* atómico.** *Commit* que contiene un solo cambio lógico, de modo que puedes entenderlo y revertirlo por separado.
 - **Conventional Commits.** Convención para escribir el asunto de un *commit* como `tipo(ámbito): resumen`, con tipos como `feat`, `fix` y `docs`.
 - **CoT (*Chain of Thought*).** Procedimiento paso a paso, escrito en Markdown, que le das a una IA como instrucciones. Los del proyecto están en el repositorio `rules`, en la carpeta `cot/`.
-- **DRM.** Protección que impide copiar o capturar contenido protegido. Por eso una captura de pantalla de un video sale negra. Cada sistema usa la suya: FairPlay en Apple y Widevine en Chrome y los motores basados en Chromium.
+- **DRM.** Protección que impide copiar o capturar contenido protegido. Por eso, en macOS, una captura de pantalla de un video sale negra. Cada sistema usa la suya: FairPlay en Apple y Widevine en Chrome y los motores basados en Chromium.
 - **Especificación.** Descripción verificable de lo que el sistema debe hacer, con requisitos y escenarios. Las del proyecto viven en `openspec/specs/`.
 - ***Fixup*.** *Commit* de corrección (`fixup!`) pensado para fusionarse con uno anterior. Este reto no lo acepta en un PR: reescribe tu rama en su lugar.
 - ***Force push* y `--force-with-lease`.** Subir una rama reescribiendo su historial. `--force-with-lease` lo hace solo si nadie más actualizó la rama desde la última vez que la leíste. Úsalo únicamente en tu propia rama de PR.

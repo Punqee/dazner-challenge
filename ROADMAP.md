@@ -1,6 +1,6 @@
 # Hoja de ruta
 
-*Última modificación: 18 de octubre de 2026, 19:36 (CST)*
+*Última modificación: 7 de noviembre de 2026, 15:30 (CST)*
 
 DAZNer hoy existe solo para macOS. Esta hoja de ruta describe cómo reorganizar el repositorio y llevar el mismo visor a Windows y a Linux (GTK y Qt), sin perder lo que lo hace útil: ventana sin bordes, proporción fija, dos paneles y pantalla completa dentro de la ventana.
 
@@ -26,7 +26,7 @@ El detalle de cada fase (requisitos, diseño y tareas) vive en `openspec/changes
 
 ## Orden de ejecución
 
-La prueba de reproducción de cada plataforma (el primer grupo de tareas de su cambio de OpenSpec) no depende del *script* compartido: solo abre DAZN en el motor web de esa plataforma. Por eso se hace desde ya y en paralelo con la extracción del *script*, y sus resultados deciden si se sigue con cada versión. El resto de cada versión sí espera a que exista `shared/fill-fullscreen.js`.
+La prueba de reproducción de cada plataforma (el primer grupo de tareas de su cambio de OpenSpec) no depende del *script* compartido: solo abre DAZN en el motor web de esa plataforma, y sus resultados deciden si se sigue con cada versión. El resto de cada versión carga `shared/fill-fullscreen.js`, que ya existe desde la fase 1.
 
 | Paso | Qué | Dónde | Depende de |
 |---|---|---|---|

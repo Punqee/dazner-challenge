@@ -1,6 +1,6 @@
 # Pendientes
 
-*Última modificación: 18 de octubre de 2026, 19:55 (CST)*
+*Última modificación: 7 de noviembre de 2026, 15:49 (CST)*
 
 Vista corta de lo que falta, por orden de ejecución y por máquina. El detalle de cada tarea (con su verificación) está en `openspec/changes/<cambio>/tasks.md`, y el orden completo y sus dependencias, en la sección «Orden de ejecución» de `ROADMAP.md`. Si este archivo y OpenSpec discrepan, manda OpenSpec.
 
@@ -8,7 +8,7 @@ Vista corta de lo que falta, por orden de ejecución y por máquina. El detalle 
 
 Estas tres pruebas no dependen entre sí y deciden si se sigue con cada versión.
 
-### En Windows (compilar desde Windows nativo; git desde WSL)
+### En Windows (git, compilación y pruebas desde Windows nativo)
 
 - [ ] **Prueba de reproducción** (`add-windows-port`, tareas 1.1 y 1.2): proyecto WPF mínimo con WebView2 que abra DAZN, compilado con `dotnet build` en PowerShell y con Visual Studio; iniciar sesión y reproducir un partido. Anotar audio, video, calidad máxima y errores. **Si no reproduce, detenerse y documentarlo.**
 

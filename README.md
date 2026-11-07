@@ -5,7 +5,7 @@ description: "Visor nativo y mínimo de DAZN (NFL Game Pass) para macOS con WebK
 
 # DAZNer
 
-*Última modificación: 18 de octubre de 2026, 19:45 (CST)*
+*Última modificación: 7 de noviembre de 2026, 15:30 (CST)*
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 [![Platform: macOS](https://img.shields.io/badge/platform-macOS-lightgrey.svg)](https://www.apple.com/macos/)
@@ -62,7 +62,7 @@ Las versiones para Windows y Linux todavía no existen: su plan está en [ROADMA
 
 ## Desarrollo con OpenSpec
 
-El trabajo pendiente se planea con [OpenSpec](https://openspec.dev/): las especificaciones de `openspec/specs/` describen el comportamiento de la versión de macOS y son el contrato que debe cumplir cada plataforma nueva, y cada versión es un cambio en `openspec/changes/` (`extract-fullscreen-script`, `add-windows-port`, `add-linux-qt-port` y `add-linux-gtk-port`). Quien clone el repositorio para trabajar en uno de ellos debe leer primero [AGENTS.md](AGENTS.md); el orden y los pendientes están en [ROADMAP.md](ROADMAP.md) y [TODO.md](TODO.md).
+El trabajo pendiente se planea con [OpenSpec](https://openspec.dev/): las especificaciones de `openspec/specs/` describen el comportamiento de la versión de macOS y son el contrato que debe cumplir cada plataforma nueva, y cada versión es un cambio en `openspec/changes/` (`add-windows-port`, `add-linux-qt-port` y `add-linux-gtk-port`); los cambios terminados, como `extract-fullscreen-script`, quedan archivados en `openspec/changes/archive/`. Quien clone el repositorio para trabajar en uno de ellos debe leer primero [AGENTS.md](AGENTS.md); el orden y los pendientes están en [ROADMAP.md](ROADMAP.md) y [TODO.md](TODO.md).
 
 ## Contribuir
 
