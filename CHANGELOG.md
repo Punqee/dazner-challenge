@@ -3,6 +3,13 @@
 **Nota:** Todas las fechas están en zona horaria CST de Ciudad de México (UTC-6).
 
 <!-- markdownlint-disable MD013 MD024 MD022 MD032 -->
+## [2026-11-07] - Revisión del proyecto y evaluación del primer reto
+
+- docs: agrega `score/punqee.md`, la evaluación de la entrega de @Punqee al reto de contribución (camino de Windows): lo que se ejecutó, lo que se observó y una propuesta de calificación con los criterios del reto
+- docs: agrega a `TODO.md` los pendientes encontrados en la revisión (la ventana que puede salirse de la pantalla al abrir el segundo panel, la excepción de HTTP sin cifrar y la versión mínima de macOS en `Info.plist`, el doble `fullscreenchange` y el `MutationObserver` que no vigila `style` en `fill-fullscreen.js`), y retira de las preguntas abiertas las ya resueltas
+- docs: actualiza `AGENTS.md`, `CHALLENGE.md`, `README.md`, `ROADMAP.md` y `TODO.md` para reflejar que git, la compilación y las pruebas se hacen desde Windows nativo, que `fill-fullscreen.js` ya existe y que una captura de pantalla en Windows puede no salir negra pero tampoco prueba el DRM
+- chore: agrega `.gitattributes`, que fija los finales de línea (LF para todo y CRLF en disco para `.sln`, `.bat` y `.cmd`) sin importar `core.autocrlf`, que Git de Windows trae en `true`
+
 ## [2026-10-18] - Primera versión de DAZNer, visor nativo de DAZN con WebKit
 
 - docs: agrega `COWBOYS.md`, una nota personal del autor sobre por qué existe el proyecto: su afición a los Cowboys, el *rack* del domingo y el *display* ultraancho 32:9
