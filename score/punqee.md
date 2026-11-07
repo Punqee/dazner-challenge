@@ -1,6 +1,6 @@
 # Evaluación del reto: Punqee
 
-*Última modificación: 7 de noviembre de 2026, 15:49 (CST)*
+*Última modificación: 7 de noviembre de 2026, 17:12 (CST)*
 
 Revisión de la entrega de Míriam ([@Punqee](https://github.com/Punqee)) al [reto de contribución](../CHALLENGE.md), hecha por el mantenedor con Claude Code (Opus 5.5) en una máquina con Windows. Registra lo que se ejecutó, lo que se observó y una propuesta de calificación con los criterios del reto.
 
@@ -121,6 +121,21 @@ Propuesta del mantenedor, sujeta a la respuesta de la participante sobre la evid
   4. Corregir `xmlns:d`, quitar los `using` sobrantes y renombrar el proyecto a `DAZNer`.
   5. Quitar la sangría del cuerpo del PR y corregir «Riesgos».
 
+## Cómo atender esta revisión
+
+Las correcciones **no se hacen a mano en el código**. La regla 1 de [CHALLENGE.md](../CHALLENGE.md) pide el orden de siempre: primero la especificación, después el código. Haz esto una vez que hayas traído los cambios de `main` (ver la sección siguiente):
+
+1. **Integra la revisión en tu cambio de OpenSpec.** Corre `/opsx:update add-windows-port` y usa este archivo como entrada. Ese comando solo revisa los artefactos del cambio (`proposal.md`, `design.md`, `tasks.md` y la especificación de `platform-windows`) y no toca código. Si tu herramienta no tiene el comando, pídele a tu IA que siga el procedimiento de `.claude/skills/openspec-update-change/SKILL.md`.
+2. **Qué va en cada artefacto:**
+   - **`design.md`:** las respuestas a las preguntas de Windows del reto (punto 3 de la lista anterior) y la bitácora de problemas con su formato, incluido el SDK de .NET 10 y el *runtime* de WebView2.
+   - **`tasks.md`:** una tarea, con su verificación, por cada corrección de código (punto 4) y por la sección de requisitos del README.
+   - **`proposal.md` y la especificación:** solo si una corrección cambia lo que el cambio promete.
+3. **Valida** con `openspec validate --all --strict` antes de tocar el código.
+4. **Aplica el código** con `/opsx:apply add-windows-port`, o siguiendo las tareas en orden si tu herramienta no lo tiene, y marca cada tarea solo cuando ejecutes su verificación.
+5. **Todo se sube a tu misma rama**, en el mismo PR, con *commits* atómicos. Este archivo no se modifica.
+
+Si algo de `design.md` contradice a `AGENTS.md` (por ejemplo, el uso de Git desde WSL), manda `AGENTS.md`: el autor trabaja ahora con Git desde Windows nativo y `.gitattributes` ya existe.
+
 ## Cómo traer los cambios de `main` a tu rama
 
 Después de la revisión, `main` avanzó: trae un `.gitattributes` que fija los finales de línea y correcciones a la documentación. Tu rama se creó sobre `1bf1f5e`, así que hay que reaplicarla sobre el `main` actual con `rebase`, como indica CHALLENGE.md en «Responder a una revisión». No uses `merge`: el PR debe quedar como una serie lineal de *commits* sobre `main`.
@@ -144,7 +159,7 @@ Después de la revisión, `main` avanzó: trae un `.gitattributes` que fija los 
    git status   # debe quedar limpio
    ```
 
-5. **Atiende la revisión** reescribiendo tu propia rama (`git commit --amend` o `git rebase -i upstream/main`), sin `fixup!`, y deja `CHANGELOG.md` solo en el último *commit*.
+5. **Atiende la revisión** como indica la sección anterior: primero la especificación y después el código. Al terminar, deja tus *commits* atómicos reescribiendo tu propia rama (`git commit --amend` o `git rebase -i upstream/main`), sin `fixup!`, y `CHANGELOG.md` solo en el último *commit*.
 6. **Comprueba y sube:**
 
    ```bash

@@ -5,6 +5,7 @@
 <!-- markdownlint-disable MD013 MD024 MD022 MD032 -->
 ## [2026-11-07] - Revisión del proyecto y evaluación del primer reto
 
+- docs: agrega a `score/punqee.md` la sección «Cómo atender esta revisión», que indica integrar primero las correcciones en el cambio de OpenSpec `add-windows-port` con `/opsx:update` (qué va en `design.md`, `tasks.md`, `proposal.md` y la especificación), validar con `openspec validate --all --strict` y aplicar el código con `/opsx:apply`, y ajusta el paso 5 de «Cómo traer los cambios de `main` a tu rama»; precisa que `AGENTS.md` manda si `design.md` lo contradice
 - docs: agrega `score/punqee.md`, la evaluación de la entrega de @Punqee al reto de contribución (camino de Windows): lo que se ejecutó, lo que se observó y una propuesta de calificación con los criterios del reto
 - docs: agrega a `TODO.md` los pendientes encontrados en la revisión (la ventana que puede salirse de la pantalla al abrir el segundo panel, la excepción de HTTP sin cifrar y la versión mínima de macOS en `Info.plist`, el doble `fullscreenchange` y el `MutationObserver` que no vigila `style` en `fill-fullscreen.js`), y retira de las preguntas abiertas las ya resueltas
 - docs: actualiza `AGENTS.md`, `CHALLENGE.md`, `README.md`, `ROADMAP.md` y `TODO.md` para reflejar que git, la compilación y las pruebas se hacen desde Windows nativo, que `fill-fullscreen.js` ya existe y que una captura de pantalla en Windows puede no salir negra pero tampoco prueba el DRM
