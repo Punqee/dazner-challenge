@@ -12,11 +12,12 @@ La versión de macOS está escrita en Swift sobre `WKWebView`. DAZN reproduce co
 **Non-Goals:**
 
 - Instalador, firma de código, tiendas, ARM.
-- Reescribir el script de pantalla completa: se usa el compartido.
+- Reescribir el script de pantalla completa: se usa el compartido (`shared/fill-fullscreen.js`).
 
 ## Decisions
 
-- **Lenguaje e interfaz:** C# (.NET) con WPF. Microsoft documenta WebView2 para C# en WPF, WinForms y WinUI 3; WPF es el camino más directo para una ventana sin bordes con dos controles web. Se usa la versión LTS vigente de .NET.
+- **Lenguaje e interfaz:** C# (.NET) con WPF. Microsoft documenta WebView2 para C# en WPF, WinForms y WinUI 3; WPF es el camino más directo para una ventana sin bordes con dos controles web. Se usa .NET 10.
+- **Proyecto y espacio de nombres:** El proyecto y su espacio de nombres se denominan `DAZNer` (`windows/DAZNer.csproj`, `windows/DAZNer.sln`).
 - **Motor:** WebView2 (Chromium de Edge), un control por panel.
 - **Ventana sin bordes:** estilo sin bordes, franja superior de 14 px que llama a `DragMove`, y Alt + arrastrar desde cualquier punto.
 - **Proporción fija:** interceptar el mensaje `WM_SIZING` para ajustar el tamaño al arrastrar los bordes.
@@ -25,32 +26,45 @@ La versión de macOS está escrita en Swift sobre `WKWebView`. DAZN reproduce co
 - **Audio por foco:** propiedad `IsMuted` de cada control, sin JavaScript.
 - **Script compartido:** `AddScriptToExecuteOnDocumentCreated` con `window.__daznerDebug`, `window.__daznerLog` y `window.__pane` definidos antes; el registro llega por el mensaje web del control.
 - **Sesión:** una carpeta de datos del usuario exclusiva de DAZNer, compartida entre paneles e instancias.
-- **Compilación:** dos vías equivalentes, porque el autor usa ambas: abrir la solución de `windows/` en Visual Studio, o ejecutar en PowerShell `windows/build.ps1`, que llama a `dotnet build -c Release`, copia el script compartido y el ícono. Ambas usan el mismo proyecto.
+- **Compilación:** dos vías equivalentes: abrir la solución de `windows/DAZNer.sln` en Visual Studio, o ejecutar en PowerShell `windows/build.ps1`, que llama a `dotnet build -c Release`, copia el script compartido y el ícono. Ambas usan el mismo proyecto.
 - **Ícono:** `.ico` generado a partir de `shared/assets/icon.png`.
+- **Flujo en Windows y codificación:** Se trabaja desde Windows nativo con Git para Windows y PowerShell. `.gitattributes` fija los finales de línea (LF en repositorio, CRLF en disco para `.sln`, `.bat` y `.cmd`) sin alterar `core.autocrlf`, y `.editorconfig` fija UTF-8 con BOM en `.cs`, `.xaml` y `.ps1`.
 
 ## Risks / Trade-offs
 
-- **DRM no verificado en WebView2:** comparte el motor con Chrome, pero no es Chrome. Se mitiga con la prueba de reproducción como primera tarea y con una decisión explícita de detener el trabajo si falla.
-- **Entorno de ejecución de WebView2:** puede no estar instalado en Windows 10. Se documenta como requisito.
-- **Varias instancias con una misma carpeta de datos:** hay que comprobar que el motor lo admite sin bloqueos.
-- **Codificación:** el repositorio es UTF-8, pero Windows usa Windows-1252 en muchos programas, y Git de Windows ensucia el historial con caracteres corruptos; el autor lo evita usando git desde WSL. Los archivos de Windows (`.cs`, `.xaml`, `.ps1`) pueden corromper los acentos si se guardan sin BOM, porque Windows PowerShell 5.1 los lee como ANSI. Se resuelve con `.editorconfig` (UTF-8 con BOM para esos tipos) y con mensajes en ASCII en `build.ps1`.
+- **DRM no verificado en WebView2:** Comparte el motor con Chrome, pero no es Chrome. Se mitigó con la prueba de reproducción del grupo 1, superada en Windows.
+- **Requisitos de compilación sin intervención:** La máquina que compila requiere el SDK de .NET 10 y el runtime de WebView2 instalados previamente. Se documentan en la bitácora y en `README.md`.
+- **Entorno de ejecución de WebView2:** Preinstalado en Windows 11; en Windows 10 desactualizado puede requerir instalación del runtime Evergreen.
+- **Varias instancias con una misma carpeta de datos:** Hay que comprobar que el motor lo admite sin bloqueos al implementar el grupo 4.
 
 ## Resultados de la prueba de reproducción
 
-- **Inicio de sesión y reproducción:** Se inició sesión en DAZN con credenciales de usuario y se reprodujo un partido de la NFL de forma continua con audio y video sin interrupciones, validando que el DRM Widevine opera correctamente en WebView2.
-- **Calidad máxima y medición:** Audio estéreo sincronizado y video fluido en alta definición (1080p / 720p según el flujo adaptativo del reproductor web de DAZN). La medición se realizó por inspección visual directa de la nitidez, fluidez y respuesta del reproductor dentro del control WebView2, sin cortes ni congelamientos.
-- **Versiones del entorno:**
+- **Inicio de sesión y reproducción:** Se inició sesión con una cuenta propia de DAZN de acceso limitado (sin suscripción de pago a NFL Game Pass), probando con contenido y partidos gratuitos disponibles en la plataforma. Se validó que la aplicación abre DAZN y reproduce video dentro del control WebView2. La prueba de reproducción fue posteriormente confirmada y validada en Windows por el mantenedor con su propia cuenta activa.
+- **Calidad y fluidez:** Se observó reproducción continua con audio y video fluido en la ventana. La evaluación de calidad fue por inspección visual subjetiva del comportamiento del reproductor dentro de WebView2, sin mediciones de tasa de bits ni extracción de métricas mediante `chrome://media-internals` o panel de estadísticas.
+- **Versiones del entorno de la participante:**
   - Sistema operativo: Windows 11 (NT 10.0.26200.0)
   - SDK de .NET: 10.0.402 (compilación de proyecto WPF para `net10.0-windows`)
   - Runtime de WebView2: 156.0.4314.58 (paquete NuGet `Microsoft.Web.WebView2` 1.0.4314.35)
-- **Errores observados y resolución:**
-  - Se resolvió un obstáculo previo con paquetes de instalación de Visual C++ Runtime mediante la actualización y reparación de componentes desde el instalador de Visual Studio.
-  - La compilación en PowerShell mediante `dotnet build` y en Visual Studio se completó con 0 errores y 0 advertencias.
-- **Evidencia:** Fotografía tomada con teléfono móvil a la pantalla completa del monitor donde se aprecia la ventana de DAZNer reproduciendo el partido sobre el escritorio de Windows (para evitar la pantalla negra provocada por la captura de DRM), disponible y enviada como evidencia del reto.
+- **Validación del mantenedor (revisión externa):**
+  - Sistema operativo: Windows 11 Pro 10.0.26300
+  - SDK de .NET: 10.0.403
+  - Runtime de WebView2: 157.0.4341.42
+  - Resultado: reproducción con cuenta activa confirmada en WebView2.
+- **Evidencia:** Fotografía tomada con teléfono celular (Samsung Galaxy S24) en formato horizontal a la pantalla del monitor con la aplicación corriendo desde Visual Studio.
+
+## Bitácora de problemas y dependencias
+
+| Síntoma | Causa | Solución | ¿Requiere acción previa de quien compila? |
+|---|---|---|---|
+| `No .NET SDKs were found` al ejecutar `dotnet build windows\DAZNer.sln` | La máquina no tiene instalado el SDK de .NET 10 (solo cuenta con *runtimes* o versiones anteriores) | Instalar el SDK mediante `winget install --id Microsoft.DotNet.SDK.10 -e` | Sí, instalar el SDK de .NET 10 antes de compilar |
+| Falta del motor de WebView2 en sistemas Windows 10 no actualizados | Windows 10 no siempre incluye preinstalado WebView2 Evergreen Runtime | Verificar en el registro o instalar mediante el instalador Evergreen de WebView2 | Sí, verificar o instalar WebView2 Runtime en Windows 10 |
+| Obstáculo con dependencias de C++ durante pruebas iniciales de ejecución | Falta de bibliotecas de ejecución de Visual C++ en el sistema | Actualizar y reparar los componentes de Visual C++ desde el instalador de Visual Studio | Sí, disponer del Visual C++ Redistributable si el sistema lo requiere |
 
 ## Open Questions
 
-- ¿Dónde vive el clon que se compila? El autor usa git desde WSL y compila desde Windows nativo. Si el repositorio está en el sistema de archivos de WSL, compilar desde Windows pasa por una ruta de red de WSL y puede ser lento o dar problemas; se prueba y, si hace falta, se documenta clonar en una ruta de Windows y trabajar el control de versiones desde WSL con `/mnt/c`.
-- ¿Hace falta además un `.gitattributes` para los finales de línea? El problema confirmado es de codificación y no de finales de línea, así que por ahora no; se reconsidera si aparece ruido de CRLF.
-- ¿Distribución como carpeta comprimida o como paquete MSIX? No cambia lo que se construye en esta fase; se decide al empaquetar.
-- Calidad máxima real de reproducción en WebView2 frente a Chrome: comprobada en alta definición (hasta 1080p/720p adaptativo) durante la prueba de la tarea 1.2 (detallada en la sección de resultados).
+- **¿Dónde vive el clon que se compila?** En el sistema de archivos nativo de Windows (`C:\Users\punqe\dazner-challenge`). El control de versiones con Git para Windows, la compilación con `dotnet` y la ejecución se hacen directamente en Windows nativo.
+- **¿Cómo se evita el ruido de codificación?** El repositorio cuenta con `.gitattributes`, que fija LF para todos los archivos del repositorio (CRLF en disco para `.sln`, `.bat` y `.cmd`) sin modificar `core.autocrlf`, y `.editorconfig`, que fija UTF-8 con BOM para `.cs`, `.xaml` y `.ps1`.
+- **¿Cómo se ejecutan los comandos y *commits*?** Desde Windows nativo (PowerShell y Git para Windows), asegurando que los archivos respeten los finales de línea y la codificación requerida.
+- **¿Hace falta además un `.gitattributes` para los finales de línea?** Resuelta: `.gitattributes` ya fue incorporado a `main` y normalizado en la copia de trabajo.
+- **¿Distribución como carpeta comprimida o como paquete MSIX?** No cambia lo que se construye en esta fase; se decide al empaquetar.
+- **Calidad máxima real de reproducción en WebView2 frente a Chrome:** La prueba inicial validó fluidez en contenido abierto; la reproducción protegida de eventos de pago y su comportamiento en alta definición fue verificada por el mantenedor en su entorno.

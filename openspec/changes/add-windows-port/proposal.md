@@ -26,5 +26,5 @@ Fuera del alcance: instalador, firma de código, publicación en tiendas, versio
 
 - Nueva carpeta `windows/` con el proyecto de C#.
 - `README.md` y `ROADMAP.md`: estado de Windows, requisitos y compilación.
-- La prueba de reproducción (grupo 1 de las tareas) no depende de nada y puede hacerse desde ya. El resto depende de `extract-fullscreen-script`.
+- La prueba de reproducción (grupo 1 de las tareas) ya fue verificada. El script compartido `shared/fill-fullscreen.js` ya está disponible en el repositorio para los grupos siguientes.
 - Requiere una máquina con Windows para compilar y probar; no se puede verificar desde macOS.
