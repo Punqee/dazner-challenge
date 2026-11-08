@@ -5,7 +5,7 @@
 - [x] 1.1 Crear en `windows/` un proyecto WPF mínimo con un WebView2 que abra `https://www.dazn.com/` y una solución que Visual Studio pueda abrir; verificar con `dotnet build` en PowerShell y compilando la solución en Visual Studio, sin errores en ambas vías (solo se puede verificar en Windows).
 - [x] 1.2 Iniciar sesión y reproducir un partido; anotar en `design.md` si hay audio y video, la calidad máxima y cualquier error; verificar que el resultado queda escrito. **Si no reproduce, detenerse aquí**, documentar el resultado en `ROADMAP.md` y no seguir con los grupos siguientes (solo se puede verificar en Windows).
 - [x] 1.3 Documentar los requisitos de Windows (SDK de .NET 10 con comando winget, runtime de WebView2, comando de compilación y ruta del binario) en la sección «Compilar (Windows)» de `README.md`; verificar que una persona pueda compilar en un clon nuevo siguiendo solo las instrucciones del README (solo se puede verificar en Windows).
-- [ ] 1.4 Renombrar el proyecto y espacio de nombres a `DAZNer` (`windows/DAZNer.csproj`, `windows/DAZNer.sln`), corregir el espacio de nombres `xmlns:d` en `MainWindow.xaml` y retirar los `using` sobrantes en `App.xaml.cs` y `MainWindow.xaml.cs`; verificar con `dotnet build windows\DAZNer.sln` con 0 advertencias y 0 errores (solo se puede verificar en Windows).
+- [x] 1.4 Renombrar el proyecto y espacio de nombres a `DAZNer` (`windows/DAZNer.csproj`, `windows/DAZNer.sln`), corregir el espacio de nombres `xmlns:d` en `MainWindow.xaml` y retirar los `using` sobrantes en `App.xaml.cs` y `MainWindow.xaml.cs`; verificar con `dotnet build windows\DAZNer.sln` con 0 advertencias y 0 errores (solo se puede verificar en Windows).
 
 ## 2. Ventana
 
