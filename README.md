@@ -45,6 +45,39 @@ swiftc shared/scripts/make-icon.swift -o /tmp/make-icon
 /tmp/make-icon shared/assets/icon.png macos/DAZNer.app/Contents/Resources/app.icns
 ```
 
+## Compilar (Windows)
+
+### Requisitos
+
+- **Sistema:** Windows 10 o Windows 11.
+- **SDK de .NET 10:** necesario para compilar el proyecto WPF (`net10.0-windows`). Se instala en PowerShell con:
+
+  ```powershell
+  winget install --id Microsoft.DotNet.SDK.10 -e
+  ```
+
+- **Runtime de WebView2:** WebView2 Evergreen Runtime viene preinstalado en Windows 11. En Windows 10 puede comprobarse en PowerShell con:
+
+  ```powershell
+  Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-F501-41E0-9E13-176E0D246995}" -ErrorAction SilentlyContinue
+  ```
+
+  Si no está instalado, se obtiene desde la página oficial del instalador de WebView2 Evergreen.
+
+### Compilación
+
+Desde PowerShell en la raíz del repositorio:
+
+```powershell
+dotnet build windows\DAZNer.sln
+```
+
+O abriendo la solución `windows\DAZNer.sln` en Visual Studio. El ejecutable se genera en:
+
+```text
+windows\bin\Debug\net10.0-windows\DAZNer.exe
+```
+
 ## Estructura del repositorio
 
 ```text
