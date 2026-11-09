@@ -5,6 +5,8 @@
 <!-- markdownlint-disable MD013 MD024 MD022 MD032 -->
 ## [2026-11-09] - Segunda revisión del reto de Punqee
 
+- docs: actualiza `score/punqee.md` tras la segunda revisión: aclara cómo leer el archivo (la primera revisión en tercera persona y lo vigente dirigido a la participante), agrega la «Calificación actual» (7.9 / 10, con 5 de las 18 tareas verificadas) y la sección «Segunda revisión (9 de noviembre de 2026)» con lo que se le pide ahora, ajusta la honestidad de la primera revisión a 10 (el total pasa de 5.9 a 6.6) porque lo dicho de más fueron descuidos y no mentiras, y pone al día los pasos de «Cómo atender esta revisión» y «Cómo traer los cambios de `main` a tu rama»
+- docs: agrega a `AGENTS.md` la sección «Evaluar entradas del reto», con las reglas de criterio del mantenedor para quien prepara una evaluación: dónde se escribe (`score/` y no `review/`), honestidad, contexto, presupuesto y cuentas de las herramientas, privacidad, calificación que se mueve, qué se probó y cómo se le indica a la participante
 - docs: agrega `review/2026-11-09_punqee_review.md`, la segunda revisión de la entrega de @Punqee al reto de contribución (PR #5, rama `challenge/punqee/add-windows-port`): qué atendió de la primera revisión, las puertas automáticas, la compilación sin intervención y lo que falta
 
 ## [2026-11-07] - Revisión del proyecto y evaluación del primer reto

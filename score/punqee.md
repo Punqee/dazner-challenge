@@ -1,8 +1,10 @@
 # Evaluación del reto: Punqee
 
-*Última modificación: 7 de noviembre de 2026, 17:31 (CST)*
+*Última modificación: 9 de noviembre de 2026, 00:54 (CST)*
 
 Revisión de la entrega de Míriam ([@Punqee](https://github.com/Punqee)) al [reto de contribución](../CHALLENGE.md), hecha por el mantenedor con Claude Code (Opus 5.5) en una máquina con Windows. Registra lo que se ejecutó, lo que se observó y una propuesta de calificación con los criterios del reto.
+
+Cómo leer este archivo: las secciones hasta «Veredicto y siguientes pasos» describen la **primera revisión**, tal como estaba la rama entonces, y hablan de la participante en tercera persona; la excepción es «Calificación actual», que se actualiza con cada entrega. Desde «Cómo atender esta revisión» el texto se dirige a la participante («tú») e incluye lo que se pide hoy. Si algo de la primera revisión contradice a «Segunda revisión», manda la segunda.
 
 ## Datos de la entrega
 
@@ -13,7 +15,7 @@ Revisión de la entrega de Míriam ([@Punqee](https://github.com/Punqee)) al [re
 | *Fork* y rama | `Punqee/dazner-challenge`, rama `challenge/punqee/add-windows-port` |
 | *Pull request* | [#5](https://github.com/incognia/dazner/pull/5), abierto el 1 de noviembre de 2026 |
 | *Commits* | `a252799` `feat(windows): add minimal WPF project with WebView2` y `9094e7a` `docs(windows): document playback test results` |
-| Base | `1bf1f5e` (el `main` vigente: la rama no está atrasada) |
+| Base | `1bf1f5e` (entonces el `main` vigente: la rama no estaba atrasada) |
 | Herramienta declarada | Antigravity con Gemini 3.8 Flash (esfuerzo alto) |
 | Alcance | Grupo 1, prueba de reproducción (tareas 1.1 y 1.2) |
 
@@ -21,7 +23,7 @@ Revisión de la entrega de Míriam ([@Punqee](https://github.com/Punqee)) al [re
 
 - **`check-pr.sh`** (copia de `rules` en `%USERPROFILE%\rules`, al día con `origin/main`), corrido con `--base main` contra la rama del PR: pasan las 16 comprobaciones. *Commits* en Conventional Commits y en inglés, viñetas desde la columna 1, `Co-Authored-By` en cada *commit*, `CHANGELOG.md` solo en el último *commit* y solo con líneas añadidas, fechas en orden y sin archivos ajenos.
 - **OpenSpec:** sin validar. La máquina del mantenedor no tiene Node ni npx y `check-pr.sh` lo reporta como aviso. La lista de verificación del PR marca `openspec validate --all --strict` como aprobado, pero eso no se pudo comprobar.
-- **GitHub Actions:** la ejecución del flujo `PR checks` sobre `9094e7a` está retenida (`action_required`) hasta que el mantenedor la apruebe, porque es la primera contribución de esa cuenta. Es a propósito: se aprueba cuando el PR esté completo y no requiere nada de la participante.
+- **GitHub Actions:** la ejecución del flujo `PR checks` sobre el PR está retenida (`action_required`) hasta que el mantenedor la apruebe, porque es la primera contribución de esa cuenta. Es a propósito: se aprueba cuando el PR esté completo y no requiere nada de la participante.
 
 ## Compilación sin intervención
 
@@ -35,9 +37,9 @@ Se clonó la rama en `C:\Users\incognia\Code\GitHub\Punqee\dazner-challenge` y s
 | `dotnet build windows\windows.sln` | **Correcto:** 0 advertencias, 0 errores, 8 s; restaura el paquete `Microsoft.Web.WebView2` 1.0.4314.35 |
 | `git status` después de compilar | Limpio: el `.gitignore` del PR cubre `bin/` y `obj/` |
 
-**Veredicto:** no pasa la regla de compilar sin intervención. El mantenedor tuvo que averiguar e instalar un requisito que no estaba documentado. El SDK de .NET 10 solo aparece en `design.md` como dato del equipo de la participante, no como requisito para quien compila.
+**Veredicto de la primera revisión:** no pasa la regla de compilar sin intervención. El mantenedor tuvo que averiguar e instalar un requisito que no estaba documentado. El SDK de .NET 10 solo aparece en `design.md` como dato del equipo de la participante, no como requisito para quien compila. En la segunda revisión, siguiendo solo la sección «Compilar (Windows)» del README, la compilación fue correcta.
 
-Qué faltaba en la documentación:
+Qué faltaba en la documentación en la primera revisión (ya está en el README):
 
 - El SDK de .NET 10 como requisito, con el comando para instalarlo.
 - El *runtime* de WebView2 como requisito, y cómo comprobar si ya está instalado (Windows 11 lo trae; Windows 10 puede no tenerlo).
@@ -49,32 +51,36 @@ Qué faltaba en la documentación:
 
 El mantenedor abrió `windows.exe`, inició sesión con su cuenta y **reprodujo contenido de DAZN: DAZN funciona dentro de WebView2**. La puerta del grupo 1 queda superada en Windows.
 
-Lo que se observó y era de esperar, porque son tareas pendientes:
+**Evidencia:** foto tomada con un celular (según el mantenedor, un Poco X8 Pro), en horizontal, el 8 de noviembre de 2026, de la pantalla de su máquina con Windows a la que accede por RDP. Muestra la ventana «DAZNer Windows» reproduciendo un partido de la NFL (marcador 21–10, segundo cuarto, 2:00 por jugar) sobre el escritorio de Windows 11, con Visual Studio Code detrás. El mantenedor confirma que la reproducción tiene audio. Es la foto que pide la regla de evidencia, y cierra la prueba de reproducción de Windows.
+
+Lo que se observó en la primera revisión y era de esperar, porque eran tareas pendientes:
 
 - La ventana es la normal de Windows, con bordes y barra de título (tarea 2.1). Abre en 16:9 (`Width="1024" Height="650"` en el XAML es el tamaño exterior, con la barra de título), pero **al redimensionarla pierde la proporción** y el video queda con franjas negras (tarea 2.2, `WM_SIZING`).
 - No hay atajos de teclado (tarea 5.1), paneles (grupo 3) ni pantalla completa dentro de la ventana (grupo 4).
 - WebView2 crea su carpeta de datos, con la sesión de DAZN, junto al ejecutable (`windows\bin\Debug\net10.0-windows\windows.exe.WebView2`), es decir, dentro del clon. Un `dotnet clean` o un clon nuevo la borran. La tarea 4.3 pide una carpeta de datos propia de DAZNer, compartida entre paneles e instancias.
 
-El PR no dice haber hecho nada de esto: solo marca las tareas 1.1 y 1.2.
+En la primera revisión, el PR no decía haber hecho nada de esto: solo marcaba las tareas 1.1 y 1.2.
 
 **Hallazgo sobre la evidencia:** una captura de pantalla del mantenedor tomada mientras reproducía **no salió en negro**. AGENTS.md y CHALLENGE.md dan por hecho que una captura de un video con DRM siempre sale en negro, pero eso se comprobó en macOS con FairPlay. En Windows, Widevine dentro de WebView2 funciona por software y Chromium no siempre bloquea la captura. Otra posibilidad es que el contenido reproducido no tuviera DRM, por ejemplo un avance. Una captura no permite distinguir los dos casos, así que la regla de evidencia (solo fotos de celular) sigue siendo la correcta, pero la explicación de esos documentos hay que matizarla para Windows.
 
-### Evidencia de la participante
+### Evidencia de la participante (primera foto, 31 de octubre)
 
 El PR incrusta una imagen (1894×1067, JPEG) y dice además haber enviado una foto por un canal privado.
 
 - **A favor:** es una foto real de celular (Samsung Galaxy S24 según sus metadatos; tiene muaré), en horizontal, tomada el 31 de octubre de 2026. Muestra la ventana «DAZNer Windows» corriendo desde Visual Studio, con su barra de depuración de XAML, lo que respalda la compilación en Visual Studio que pide la tarea 1.1.
 - **En contra:** **no muestra ninguna reproducción.** Se ve la portada de DAZN con un cartel promocional estático de un evento de MMA, no un partido de la NFL ni un video con sus controles. En la barra superior aparece el botón «Suscribir», que DAZN suele mostrar cuando la cuenta no tiene una suscripción activa.
-- **Conclusión:** la foto prueba que la aplicación abre DAZN, no que el DRM reproduzca. El reto permite no tener suscripción, siempre que se declare y la reproducción se valide con una página de demostración de DRM. El PR, en cambio, afirma una «reproducción continua con audio y video en alta definición» de un partido de la NFL. La participante ya aclaró al mantenedor que probó con su propia cuenta de DAZN, de acceso limitado, con partidos gratuitos. Eso es válido; solo falta que lo declare en el PR y en `design.md`.
+- **Conclusión:** la foto prueba que la aplicación abre DAZN, no que el DRM reproduzca. El reto permite no tener suscripción, siempre que se declare y la reproducción se valide con una página de demostración de DRM. El PR, en cambio, afirma una «reproducción continua con audio y video en alta definición» de un partido de la NFL. La participante ya aclaró al mantenedor que probó con su propia cuenta de DAZN, de acceso limitado, con partidos gratuitos. Eso es válido. La segunda foto, que agregó después al PR, sí prueba la reproducción (ver «Segunda revisión»), y su cuenta ya está declarada en el PR y en `design.md`.
 
 ## Observaciones
+
+Estas observaciones son de la primera revisión y ya están atendidas, salvo lo que repite «Qué se te pide ahora».
 
 ### Código
 
 - `MainWindow.xaml` declara `xmlns:d="http://schemas.microsoft.com/winfx/2006/xaml/desarrollo"`, un espacio de nombres que no existe. El correcto es `http://schemas.microsoft.com/expression/blend/2008`. Compila porque `mc:Ignorable="d"` lo ignora, pero parece una traducción automática que nadie revisó.
 - El proyecto y el espacio de nombres se llaman `windows`, que es genérico. Conviene que se llamen `DAZNer`.
 - Quedan `using` de la plantilla sin usar (`System.Configuration`, `System.Data` y casi todos los de `MainWindow.xaml.cs`), aunque `ImplicitUsings` ya está activo.
-- Los `.cs`, `.xaml` y `.sln` traen BOM y finales de línea LF, como pide `.editorconfig`.
+- Los `.cs` y `.xaml` traen BOM, como pide `.editorconfig`, y todos los archivos tienen finales de línea LF.
 
 ### `design.md`
 
@@ -96,25 +102,40 @@ El PR incrusta una imagen (1894×1067, JPEG) y dice además haber enviado una fo
 - El bloque `## [2026-11-01] - Prueba de reproducción en Windows` tiene la fecha correcta en CST y la posición correcta.
 - Las viñetas son escuetas y no ponen las rutas entre comillas invertidas (`windows/`, `design.md`), como hace el resto del archivo.
 
-## Calificación propuesta
+## Calificación de la primera revisión
 
-Propuesta del mantenedor. Califica la entrega tal como se presentó en el PR. Escala de 0 a 10 por criterio, ponderada con los pesos de CHALLENGE.md.
+Califica la entrega tal como se presentó en el PR, con la rama en el estado de la primera revisión. Escala de 0 a 10 por criterio, ponderada con los pesos de CHALLENGE.md.
 
 | Criterio | Peso | Calificación | Motivo |
 |---|---|---|---|
 | Disciplina SDD | 30 % | 7 | Sigue el cambio ya propuesto y marca solo las tareas del grupo 1. Faltan las respuestas que el reto exige para Windows y la bitácora con su formato. |
 | Compila en otra máquina sin intervención | 25 % | 4 | Compila sin advertencias, pero requiere el SDK de .NET 10, que no está documentado, y no hay instrucciones de compilación. |
 | Calidad de los PR y de los *commits* | 20 % | 7 | Pasa todas las puertas de `check-pr.sh` y tiene *commits* atómicos y bien descritos. El cuerpo del PR no se ve con formato y el CHANGELOG es escueto. |
-| Honestidad | 15 % | 5 | No afirma nada fuera del grupo 1 e incluye la declaración de cuenta. La evidencia no muestra la reproducción que se afirma, la calidad no se midió, OpenSpec se marca como validado sin que se pueda comprobar y «Riesgos: ninguno» no cuadra. Su aclaración posterior (cuenta propia de acceso limitado, con partidos gratuitos) explica la evidencia, pero no cambia la nota: el PR afirmaba otra cosa y no lo declaró. |
+| Honestidad | 15 % | 10 | No afirma nada fuera del grupo 1 e incluye la declaración de cuenta. Lo que se dijo de más (la reproducción que la foto no muestra, la calidad sin medir, OpenSpec como validado y «Riesgos: ninguno») son descuidos de quien empieza, no mentiras, y la participante aclaró su cuenta de acceso limitado en cuanto se le preguntó. |
 | Calidad técnica | 10 % | 6 | Proyecto mínimo y correcto para una prueba, pero con un espacio de nombres inventado, nombres genéricos y restos de la plantilla. |
-| **Total ponderado** | | **5.9 / 10** | |
+| **Total ponderado** | | **6.6 / 10** | |
+
+## Calificación actual
+
+Es la calificación vigente. Se actualiza cada vez que la participante entrega y el mantenedor verifica un grupo de tareas. Escala de 0 a 10 por criterio, ponderada con los pesos de CHALLENGE.md.
+
+| Criterio | Peso | Calificación | Motivo |
+|---|---|---|---|
+| Disciplina SDD | 30 % | 8 | Siguió el flujo: primero la especificación, luego el README y después el código. Falta confirmar en el PR qué probó de la tarea 2.1 y separar el *commit* que mezcla dos cambios. |
+| Compila en otra máquina sin intervención | 25 % | 8 | Compiló en un clon nuevo siguiendo solo el README, con 0 advertencias y 0 errores. No se volvió a probar la instalación del SDK ni la compilación en Visual Studio. |
+| Calidad de los PR y de los *commits* | 20 % | 7 | Pasa las 16 puertas de `check-pr.sh` y el cuerpo del PR ya se ve con formato. Falta una viñeta del CHANGELOG y un *commit* mezcla dos cambios. |
+| Honestidad | 15 % | 10 | Declara su cuenta de acceso limitado y lo que no probó. Lo que se dijo de más fueron descuidos, no mentiras. |
+| Calidad técnica | 10 % | 6 | La ventana sin bordes funciona, pero usa un *hook* global de ratón, deja código que no se ejecuta y no documenta el riesgo. |
+| **Total ponderado** | | **7.9 / 10** | |
+
+Avance verificado: 5 de las 18 tareas del cambio `add-windows-port` (1.1 a 1.4 y 2.1). Quedan las tareas 2.2 a 5.4.
 
 ## Veredicto y siguientes pasos
 
 - **Prueba de reproducción de Windows: superada**, verificada en el equipo del mantenedor. El camino de Windows puede seguir con los grupos 2 a 5.
-- **El PR es una buena base** para el camino de Windows: no rompe nada y sus archivos respetan la codificación y los finales de línea del repositorio. Se integra cuando atienda la revisión y esté al día con `main` (ver la sección siguiente).
-- **Todavía no hay *referral*:** el reto lo condiciona a compilar y arrancar sin intervención.
-- **Qué se le pide a la participante** si continúa:
+- **El PR es una buena base** para el camino de Windows: no rompe nada y sus archivos respetan la codificación y los finales de línea del repositorio. Se integra cuando atienda la revisión, esté al día con `main` y el PR esté completo (ver «Cómo atender esta revisión» y «Cómo traer los cambios de `main` a tu rama»).
+- **Todavía no hay *referral*:** se decide cuando el PR esté completo, y el reto lo condiciona a compilar y arrancar sin intervención.
+- **Qué se le pidió a la participante** (ya atendido, ver la segunda revisión):
   1. Documentar el SDK de .NET 10 y el *runtime* de WebView2 en una sección de requisitos del README y en la bitácora de `design.md`, con su formato.
   2. Responder en `design.md` las preguntas de Windows que exige el reto. Incluye actualizar la pregunta abierta sobre `.gitattributes`, que ya existe en `main`.
   3. Corregir `xmlns:d`, quitar los `using` sobrantes y renombrar el proyecto a `DAZNer`.
@@ -123,24 +144,45 @@ Propuesta del mantenedor. Califica la entrega tal como se presentó en el PR. Es
 
 ## Cómo atender esta revisión
 
-Las correcciones **no se hacen a mano en el código**. La regla 1 de [CHALLENGE.md](../CHALLENGE.md) pide el orden de siempre: primero la especificación, después el código. Haz esto una vez que hayas traído los cambios de `main` (ver la sección siguiente):
+Las correcciones **no se hacen a mano en el código**. La regla 1 de [CHALLENGE.md](../CHALLENGE.md) pide el orden de siempre: primero la especificación, después el código. Haz esto una vez que hayas traído los cambios de `main` (ver «Cómo traer los cambios de `main` a tu rama»):
 
-1. **Integra la revisión en tu cambio de OpenSpec.** Corre `/opsx:update add-windows-port` y usa este archivo como entrada. Ese comando solo revisa los artefactos del cambio (`proposal.md`, `design.md`, `tasks.md` y la especificación de `platform-windows`) y no toca código. Si tu herramienta no tiene el comando, pídele a tu IA que siga el procedimiento de `.claude/skills/openspec-update-change/SKILL.md`.
+1. **Integra la revisión en tu cambio de OpenSpec.** Corre `/opsx:update add-windows-port` y usa este archivo y la [segunda revisión](../review/2026-11-09_punqee_review.md) como entrada; si algo se repite, manda la segunda. Ese comando solo revisa los artefactos del cambio (`proposal.md`, `design.md`, `tasks.md` y la especificación de `platform-windows`) y no toca código. Si tu herramienta no tiene el comando, pídele a tu IA que siga el procedimiento de `.claude/skills/openspec-update-change/SKILL.md`.
 2. **Qué va en cada artefacto:**
-   - **`design.md`:** las respuestas a las preguntas de Windows del reto (punto 2 de la lista anterior) y la bitácora de problemas con su formato, incluido el SDK de .NET 10 y el *runtime* de WebView2.
-   - **`tasks.md`:** una tarea, con su verificación, por cada corrección de código (punto 3) y por la sección de requisitos del README.
+   - **`design.md`:** las respuestas a las preguntas de Windows del reto, la bitácora de problemas con su formato (incluido el SDK de .NET 10 y el *runtime* de WebView2) y los riesgos que pida la revisión.
+   - **`tasks.md`:** una tarea, con su verificación, por cada corrección de código y por la sección de requisitos del README.
    - **`proposal.md` y la especificación:** solo si una corrección cambia lo que el cambio promete.
 3. **Valida** con `openspec validate --all --strict` antes de tocar el código.
 4. **Aplica el código** con `/opsx:apply add-windows-port`, o siguiendo las tareas en orden si tu herramienta no lo tiene, y marca cada tarea solo cuando ejecutes su verificación.
 5. **Todo se sube a tu misma rama**, en el mismo PR, con *commits* atómicos. Este archivo no se modifica.
 
-**Lo que no puedas probar.** Hay tareas que dependen de contenido de NFL Game Pass, como la pantalla completa con cuatro videos (tarea 4.2), o de algo que tu cuenta no permite. Esas tareas se quedan **sin marcar** (`- [ ]`), se anotan en la sección «Qué no se probó» del PR y las verifica el mantenedor con su cuenta, en su equipo. Marcar una tarea que no ejecutaste cuenta como falta de honestidad, y declarar lo que no pudiste probar no te resta puntos.
+**Lo que no puedas probar.** Hay tareas que dependen de contenido de NFL Game Pass, como la pantalla completa con cuatro videos (tarea 4.2), o de algo que tu cuenta no permite. Esas tareas se quedan **sin marcar** (`- [ ]`), se anotan en la sección «Qué no se probó» del PR y las verifica el mantenedor con su cuenta, en su equipo. Una tarea que no ejecutaste no se marca como hecha, porque así lo piden las reglas del reto; si no pudiste probar algo, basta con declararlo y no pasa nada.
 
 Si algo de `design.md` contradice a `AGENTS.md` (por ejemplo, el uso de Git desde WSL), manda `AGENTS.md`: el autor trabaja ahora con Git desde Windows nativo y `.gitattributes` ya existe.
 
+## Segunda revisión (9 de noviembre de 2026)
+
+El mantenedor revisó la rama que reescribiste, con su último *commit* `feat(windows): add borderless window with drag strip and Alt drag`. El detalle completo está en [review/2026-11-09_punqee_review.md](../review/2026-11-09_punqee_review.md); léelo antes de seguir. Resumen:
+
+- **Atendido de la primera revisión:** el *rebase* sobre `main`, la especificación antes que el código, los requisitos en el README, las respuestas y la bitácora en `design.md`, la limpieza del proyecto (`DAZNer`, `xmlns:d` y los `using`), el cuerpo del PR y la declaración de la cuenta de acceso limitado. La lista de «Veredicto y siguientes pasos» ya está atendida.
+- **Prueba de reproducción (grupo 1): superada,** ahora también con la foto de la participante como evidencia.
+- **Tarea 2.1: funciona** en el equipo del mantenedor, probada por RDP. La ventana responde al clic, se arrastra desde la franja, se mueve con `Alt` desde cualquier punto, y el doble clic la maximiza y la restaura sin tapar la barra de tareas. El mantenedor no puede probar el efecto del *hook* de ratón en un equipo con monitor y asume ese riesgo.
+- **Calificación:** la primera revisión califica la entrega tal como se presentó entonces; su honestidad se ajustó a 10 y el total quedó en 6.6, porque lo que se afirmó de más fueron descuidos y no mentiras. La calificación vigente está en «Calificación actual» y se mueve conforme la participante entregue y el mantenedor verifique cada grupo de tareas.
+
+**Qué se te pide ahora**, en este orden:
+
+1. Corregir en `design.md` la afirmación de que la reproducción «en alta definición» fue verificada por el mantenedor: nadie midió la calidad. Quita «en alta definición» o di que no se midió.
+2. Agregar a «Risks / Trade-offs» de `design.md` el riesgo del *hook* `WH_MOUSE_LL`: recibe todos los movimientos del ratón del sistema, corre en el hilo de la interfaz, y si la aplicación se traba el ratón de todo Windows se pone lento o Windows quita el *hook* sin avisar y el arrastre deja de funcionar. Quitar o justificar el código que nunca se ejecuta (`DragStrip_MouseLeftButtonDown`, `Window_PreviewMouseLeftButtonDown` y el `Border` de `MainWindow.xaml`). Una alternativa a evaluar es la región de arrastre de WebView2 con `IsNonClientRegionSupportEnabled` y la propiedad CSS `app-region: drag`.
+3. Mover el renombre de `windows.csproj` y `windows.sln` a `DAZNer`, que hoy está en el *commit* `docs(windows): document build requirements and steps in README`, al *commit* `refactor(windows): rename project to DAZNer and clean up template code`. Completar el CHANGELOG con la viñeta que falta (la del *commit* `docs(windows): update change specification and design following review`) y dejar las viñetas en el orden de los *commits*.
+4. Confirmar en el PR qué probaste de la tarea 2.1: el arrastre desde la franja, `Alt` + arrastrar y el doble clic para maximizar y restaurar.
+5. Menores: quitar la ruta personal (`C:\Users\punqe\...`) de `design.md` y dejar una línea en blanco antes de los bloques de código dentro de las listas del README.
+
+Todo se atiende como indica «Cómo atender esta revisión»: primero `design.md` y `tasks.md`, después el código, con *commits* atómicos reescribiendo tu propia rama y `git push --force-with-lease`.
+
 ## Cómo traer los cambios de `main` a tu rama
 
-Después de la revisión, `main` avanzó: trae un `.gitattributes` que fija los finales de línea y correcciones a la documentación. Tu rama se creó sobre `1bf1f5e`, así que hay que reaplicarla sobre el `main` actual con `rebase`, como indica CHALLENGE.md en «Responder a una revisión». No uses `merge`: el PR debe quedar como una serie lineal de *commits* sobre `main`.
+Si ya hiciste este *rebase* y `git fetch upstream` no trae *commits* nuevos de `main`, salta a «Finales de línea y codificación». Repítelo solo si `main` avanza otra vez.
+
+Después de la primera revisión, `main` avanzó: trae un `.gitattributes` que fija los finales de línea y correcciones a la documentación. Tu rama se creó sobre `1bf1f5e`, así que hay que reaplicarla sobre el `main` actual con `rebase`, como indica CHALLENGE.md en «Responder a una revisión». No uses `merge`: el PR debe quedar como una serie lineal de *commits* sobre `main`.
 
 1. **Antes de empezar,** haz un *commit* o un `git stash` de lo que tengas a medias: el paso 4 descarta los cambios sin guardar.
 2. **Trae `main` y reaplica tu rama encima:**
@@ -152,7 +194,7 @@ Después de la revisión, `main` avanzó: trae un `.gitattributes` que fija los 
    git rebase upstream/main
    ```
 
-3. **Resuelve el conflicto de `CHANGELOG.md`.** Tu bloque y el de `main` se agregan en el mismo lugar. Conserva los dos, con el tuyo arriba, y **cambia la fecha de tu bloque** por la de tu último *commit* (hora del centro de México): `check-pr.sh` exige las fechas en orden cronológico inverso, y un `2026-11-01` encima de una fecha posterior no pasa. Después, `git add CHANGELOG.md` y `git rebase --continue`.
+3. **Resuelve el conflicto de `CHANGELOG.md`.** Tu bloque y el de `main` se agregan en el mismo lugar. Conserva los dos, con el tuyo arriba, y **cambia la fecha de tu bloque** por la de tu último *commit* (hora del centro de México): `check-pr.sh` exige las fechas en orden cronológico inverso, y un `2026-11-01` encima de una fecha posterior no pasa. Si la fecha de tu último *commit* coincide con la de un bloque que ya existe en `main`, pon tus viñetas dentro de ese bloque, arriba de las que tiene: solo puede haber un bloque por fecha. Después, `git add CHANGELOG.md` y `git rebase --continue`.
 4. **Refresca los finales de línea de tu copia.** Git de Windows trae `core.autocrlf=true`, así que tus archivos pueden estar en CRLF en disco. Con el `.gitattributes` nuevo, git los vería como modificados. Para volver a escribirlos con las reglas nuevas:
 
    ```bash
@@ -161,7 +203,7 @@ Después de la revisión, `main` avanzó: trae un `.gitattributes` que fija los 
    git status   # debe quedar limpio
    ```
 
-5. **Atiende la revisión** como indica la sección anterior: primero la especificación y después el código. Al terminar, deja tus *commits* atómicos reescribiendo tu propia rama (`git commit --amend` o `git rebase -i upstream/main`), sin `fixup!`, y `CHANGELOG.md` solo en el último *commit*.
+5. **Atiende la revisión** como indica «Cómo atender esta revisión»: primero la especificación y después el código. Al terminar, deja tus *commits* atómicos reescribiendo tu propia rama (`git commit --amend` o `git rebase -i upstream/main`), sin `fixup!`, y `CHANGELOG.md` solo en el último *commit*.
 6. **Comprueba y sube:**
 
    ```bash
@@ -181,8 +223,8 @@ Tu Git de Windows suele convertir los archivos a CRLF, y eso ensucia el reposito
 - **Antes de cada *commit*,** corre `git diff --check` y `git status`: solo deben aparecer los cambios que hiciste.
 - **Antes de subir,** comprueba estas dos cosas:
   - `git ls-files --eol | findstr "i/crlf"` no debe mostrar ningún archivo.
-  - `git diff upstream/main --stat` debe mostrar solo tus archivos de `windows/`, los de tu cambio en `openspec/changes/add-windows-port/` y `CHANGELOG.md`.
-- **Si un archivo que no tocaste aparece modificado,** no lo subas: normalmente son finales de línea. Para ese archivo basta con `git restore -- <archivo>`, que lo vuelve a escribir con las reglas de `.gitattributes` y descarta lo que tenga sin guardar. Si son muchos, repite el paso 4 de la sección anterior, pero **antes haz un *commit* o un `git stash` de tu trabajo**: `git reset --hard` borra todo lo que no esté guardado.
+  - `git diff upstream/main --stat` debe mostrar solo tus archivos de `windows/`, los de tu cambio en `openspec/changes/add-windows-port/`, `README.md`, `.gitignore` y `CHANGELOG.md`.
+- **Si un archivo que no tocaste aparece modificado,** no lo subas: normalmente son finales de línea. Para ese archivo basta con `git restore -- <archivo>`, que lo vuelve a escribir con las reglas de `.gitattributes` y descarta lo que tenga sin guardar. Si son muchos, repite el paso 4 de «Cómo traer los cambios de `main` a tu rama», pero **antes haz un *commit* o un `git stash` de tu trabajo**: `git reset --hard` borra todo lo que no esté guardado.
 
 ## Entorno del mantenedor
 
