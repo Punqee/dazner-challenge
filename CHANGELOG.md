@@ -3,6 +3,10 @@
 **Nota:** Todas las fechas están en zona horaria CST de Ciudad de México (UTC-6).
 
 <!-- markdownlint-disable MD013 MD024 MD022 MD032 -->
+## [2026-11-09] - Segunda revisión del reto de Punqee
+
+- docs: agrega `review/2026-11-09_punqee_review.md`, la segunda revisión de la entrega de @Punqee al reto de contribución (PR #5, rama `challenge/punqee/add-windows-port`): qué atendió de la primera revisión, las puertas automáticas, la compilación sin intervención y lo que falta
+
 ## [2026-11-07] - Revisión del proyecto y evaluación del primer reto
 
 - docs: completa en `score/punqee.md` la guía de la revisión: aclara que la calificación se refiere a la entrega tal como se presentó en el PR y que la aclaración posterior de la participante explica la evidencia pero no cambia la nota de honestidad, incluye `CHANGELOG.md` y el cambio de `openspec/changes/add-windows-port/` entre lo que debe mostrar `git diff upstream/main --stat`, y precisa que un archivo ajeno con finales de línea distintos se arregla con `git restore -- <archivo>` y que `git reset --hard` exige guardar antes el trabajo
