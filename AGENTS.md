@@ -1,6 +1,6 @@
 # Guía para agentes
 
-*Última modificación: 7 de noviembre de 2026, 15:49 (CST)*
+*Última modificación: 9 de noviembre de 2026, 00:58 (CST)*
 
 Este archivo es para un agente de IA que trabaja en este repositorio, sobre todo si lo clonó en Windows o Linux para construir una de las versiones pendientes. El autor mantiene un repositorio de reglas personales (`rules`) con las *skills* de trabajo (`/commit`, `/changelogger`, `/git-init`, `/licensing`) y sus procedimientos. Está presente en sus máquinas con Linux, en WSL y en Windows, así que **si existe, manda sobre el resumen de este archivo**; este archivo recoge lo esencial por si no está.
 
@@ -56,6 +56,19 @@ Para trabajar un cambio:
 - **Credenciales:** DAZNer nunca lee, guarda ni registra contraseñas. No escribas credenciales en archivos, registros ni *commits*.
 - **Marcas:** no uses logotipos de DAZN ni de la NFL. El ícono del proyecto es propio (`shared/assets/icon.png`).
 - **No tocar `macos/` salvo que el cambio lo pida.** Cualquier modificación a `shared/fill-fullscreen.js` exige repetir la verificación manual de pantalla completa en macOS.
+
+## Evaluar entradas del reto
+
+El mantenedor evalúa cada entrada de [CHALLENGE.md](CHALLENGE.md) con los pesos que ahí se indican. Si un agente prepara la evaluación, estas son las reglas de criterio; las del reto siguen valiendo y esto solo fija cómo se interpretan:
+
+- **Dónde se escribe.** La evaluación va en `score/<cuenta>.md`, que escribe el agente. La carpeta `review/` es del mantenedor: el agente no la edita. Si algo de `review/` contradice a `score/`, se lo avisa y él decide.
+- **Honestidad.** Se califica con 10, salvo que la participante mienta a propósito. Un descuido, una frase sin medir o una afirmación de más (por ejemplo, la de una IA que redactó el PR) no es mentir. Quien pone su tiempo y su dinero en el reto no tiene necesidad de engañar. El criterio es humano y mexicano, no una lectura literal ni impersonal de las reglas.
+- **Contexto.** Se pondera el esfuerzo: trabajar fuera del horario laboral, de noche o en fin de semana, invertir en sus propias herramientas y ser nueva en el tema. No tiene un peso numérico: lo decide el mantenedor.
+- **Presupuesto y cuentas de las herramientas.** Se evalúa con la realidad de Latinoamérica, donde cada quien se adapta a lo que le alcanza, y no con el parámetro de quien tiene recursos holgados. Cambiar de cuenta o de plan de una herramienta de IA para poder seguir (porque el plan familiar no permite mejorarlo, porque se acabaron los *tokens*, etcétera) es adaptarse, no una falta. La regla de una cuenta por persona del reto se refiere a la cuenta de GitHub, no a las de las herramientas.
+- **Privacidad.** `score/` está en un repositorio público. El contexto va en una frase general; el horario, los pagos y lo que la participante contó en privado no se publican.
+- **La calificación se mueve.** Cambia conforme la participante entrega y el mantenedor verifica cada grupo de tareas. `score/<cuenta>.md` guarda la «Calificación actual» y la de cada revisión. No se propone una nota completa para trabajo en curso.
+- **Qué se probó.** La fuente de verdad es el `review/` del mantenedor. Si un mensaje de chat dice otra cosa, se le pregunta; no se corrige su documento.
+- **Cómo se le indica a la participante.** Las instrucciones van en el `score`, no en WhatsApp. Las correcciones entran por la especificación (`/opsx:update`) antes del código.
 
 ## Lo que ya se descubrió de DAZN
 
