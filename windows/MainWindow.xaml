@@ -6,8 +6,22 @@
         xmlns:local="clr-namespace:DAZNer"
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
-        Title="DAZNer" Height="650" Width="1024">
-    <Grid>
+        Title="DAZNer" Height="720" Width="1280"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+        Background="Black"
+        PreviewMouseLeftButtonDown="Window_PreviewMouseLeftButtonDown">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0"
+                      ResizeBorderThickness="6,3,6,6"
+                      CornerRadius="0"
+                      GlassFrameThickness="0"
+                      UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+    <Grid Background="Black">
         <wv2:WebView2 Name="webView" Source="https://www.dazn.com/" />
+        <Border Name="dragStrip" Height="14" VerticalAlignment="Top" Background="Transparent"
+                MouseLeftButtonDown="DragStrip_MouseLeftButtonDown" />
     </Grid>
 </Window>
