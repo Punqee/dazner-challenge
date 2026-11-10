@@ -133,6 +133,7 @@ namespace DAZNer
         private WebView2? _secondWebView;
 
         private int _paneCount = 1;
+        private int _focusedPane = 0;
         private bool _isDragging = false;
         private bool _isResizing = false;
         private bool _isNormalState = true;
@@ -151,6 +152,7 @@ namespace DAZNer
         public MainWindow()
         {
             InitializeComponent();
+            ConfigureWebView(webView, 0);
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -234,6 +236,105 @@ namespace DAZNer
             }
 
             _webViewDisabledForResize = shouldDisable;
+        }
+
+        private WebView2? GetPane(int index)
+        {
+            if (index == 0)
+            {
+                return webView;
+            }
+            if (index == 1)
+            {
+                return _secondWebView;
+            }
+            return null;
+        }
+
+        private void ConfigureWebView(WebView2 pane, int index)
+        {
+            pane.GotFocus += (_, _) =>
+            {
+                if (_focusedPane != index)
+                {
+                    FocusPane(index);
+                }
+            };
+
+            void AttachCoreEvents()
+            {
+                if (pane.CoreWebView2 == null)
+                {
+                    return;
+                }
+
+                pane.CoreWebView2.NewWindowRequested += (_, args) =>
+                {
+                    args.Handled = true;
+                    if (!string.IsNullOrWhiteSpace(args.Uri))
+                    {
+                        pane.CoreWebView2.Navigate(args.Uri);
+                    }
+                };
+
+                SyncAudio();
+            }
+
+            if (pane.CoreWebView2 != null)
+            {
+                AttachCoreEvents();
+            }
+            else
+            {
+                pane.CoreWebView2InitializationCompleted += (_, args) =>
+                {
+                    if (args.IsSuccess)
+                    {
+                        AttachCoreEvents();
+                    }
+                };
+            }
+        }
+
+        public void FocusPane(int index)
+        {
+            if (index < 0 || index >= _paneCount)
+            {
+                index = 0;
+            }
+
+            _focusedPane = index;
+            GetPane(index)?.Focus();
+            SyncAudio();
+        }
+
+        public void NextPane()
+        {
+            if (_paneCount > 1)
+            {
+                FocusPane((_focusedPane + 1) % _paneCount);
+            }
+        }
+
+        private void SyncAudio()
+        {
+            if (_paneCount <= 1)
+            {
+                if (webView.CoreWebView2 != null)
+                {
+                    webView.CoreWebView2.IsMuted = false;
+                }
+                return;
+            }
+
+            for (int i = 0; i < _paneCount; i++)
+            {
+                var pane = GetPane(i);
+                if (pane?.CoreWebView2 != null)
+                {
+                    pane.CoreWebView2.IsMuted = (i != _focusedPane);
+                }
+            }
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -456,6 +557,15 @@ namespace DAZNer
                                     return (IntPtr)1;
                                 }
                             }
+                            else if (_paneCount == 2)
+                            {
+                                int halfWidth = clientRect.right / 2;
+                                int clickedPane = (pt.x >= halfWidth + 4) ? 1 : (pt.x < halfWidth - 4 ? 0 : _focusedPane);
+                                if (clickedPane != _focusedPane)
+                                {
+                                    Dispatcher.InvokeAsync(() => FocusPane(clickedPane));
+                                }
+                            }
                         }
                     }
                 }
@@ -540,6 +650,7 @@ namespace DAZNer
                     DefaultBackgroundColor = System.Drawing.Color.Black,
                     Source = new Uri(HomeUrl)
                 };
+                ConfigureWebView(pane1, 1);
                 Grid.SetColumn(pane1, 2);
                 panesGrid.Children.Add(pane1);
                 _secondWebView = pane1;
@@ -570,6 +681,15 @@ namespace DAZNer
 
             _paneCount = count;
             ResizeWindowForPanes(count);
+
+            if (_focusedPane >= count)
+            {
+                FocusPane(0);
+            }
+            else
+            {
+                SyncAudio();
+            }
         }
 
         private void ResizeWindowForPanes(int count)
@@ -640,6 +760,106 @@ namespace DAZNer
             UpdateCachedWindowMetrics();
         }
 
+        public void OpenUrlDialog()
+        {
+            var activePane = GetPane(_focusedPane);
+            if (activePane == null)
+            {
+                return;
+            }
+
+            string currentUrl = activePane.CoreWebView2?.Source ?? activePane.Source?.AbsoluteUri ?? HomeUrl;
+
+            var dialog = new Window
+            {
+                Title = $"Abrir URL en el panel {_focusedPane + 1}",
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                SizeToContent = SizeToContent.WidthAndHeight,
+                ResizeMode = ResizeMode.NoResize,
+                ShowInTaskbar = false,
+                Topmost = Topmost
+            };
+
+            var rootPanel = new StackPanel
+            {
+                Margin = new Thickness(16)
+            };
+
+            var label = new TextBlock
+            {
+                Text = $"Abrir URL en el panel {_focusedPane + 1}",
+                Margin = new Thickness(0, 0, 0, 8)
+            };
+
+            var textBox = new TextBox
+            {
+                Width = 420,
+                Text = currentUrl,
+                Margin = new Thickness(0, 0, 0, 12)
+            };
+
+            var buttonPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Right
+            };
+
+            var openButton = new Button
+            {
+                Content = "Abrir",
+                Width = 80,
+                IsDefault = true,
+                Margin = new Thickness(0, 0, 8, 0)
+            };
+            openButton.Click += (_, _) => dialog.DialogResult = true;
+
+            var cancelButton = new Button
+            {
+                Content = "Cancelar",
+                Width = 80,
+                IsCancel = true
+            };
+
+            buttonPanel.Children.Add(openButton);
+            buttonPanel.Children.Add(cancelButton);
+
+            rootPanel.Children.Add(label);
+            rootPanel.Children.Add(textBox);
+            rootPanel.Children.Add(buttonPanel);
+            dialog.Content = rootPanel;
+
+            dialog.SourceInitialized += (_, _) =>
+            {
+                textBox.Focus();
+                textBox.SelectAll();
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                string input = textBox.Text.Trim();
+                if (!string.IsNullOrEmpty(input))
+                {
+                    if (!input.Contains("://", StringComparison.Ordinal))
+                    {
+                        input = "https://" + input;
+                    }
+
+                    if (Uri.TryCreate(input, UriKind.Absolute, out Uri? targetUri))
+                    {
+                        if (activePane.CoreWebView2 != null)
+                        {
+                            activePane.CoreWebView2.Navigate(targetUri.AbsoluteUri);
+                        }
+                        else
+                        {
+                            activePane.Source = targetUri;
+                        }
+                    }
+                }
+            }
+        }
+
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (Keyboard.Modifiers == ModifierKeys.Control)
@@ -652,6 +872,17 @@ namespace DAZNer
                 else if (e.Key == Key.D2 || e.Key == Key.NumPad2)
                 {
                     SetPaneCount(2);
+                    e.Handled = true;
+                }
+                else if (e.Key == Key.Oem3 || e.Key == Key.Oem5 || e.Key == Key.Oem1 ||
+                         e.Key == Key.OemOpenBrackets || e.Key == Key.OemBackslash || e.Key == Key.Tab)
+                {
+                    NextPane();
+                    e.Handled = true;
+                }
+                else if (e.Key == Key.L)
+                {
+                    OpenUrlDialog();
                     e.Handled = true;
                 }
                 else if (e.Key == Key.F)
