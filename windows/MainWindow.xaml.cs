@@ -12,12 +12,15 @@ namespace DAZNer
     public partial class MainWindow : Window
     {
         private const int WH_MOUSE_LL = 14;
+        private const int WM_MOVE = 0x0003;
+        private const int WM_SIZE = 0x0005;
         private const int WM_MOUSEMOVE = 0x0200;
         private const int WM_LBUTTONDOWN = 0x0201;
         private const int WM_LBUTTONUP = 0x0202;
         private const int WM_SIZING = 0x0214;
         private const int WM_ENTERSIZEMOVE = 0x0231;
         private const int WM_EXITSIZEMOVE = 0x0232;
+        private const int WM_DPICHANGED = 0x02E0;
         private const int WMSZ_LEFT = 1;
         private const int WMSZ_RIGHT = 2;
         private const int WMSZ_TOP = 3;
@@ -128,7 +131,12 @@ namespace DAZNer
         private int _paneCount = 1;
         private bool _isDragging = false;
         private bool _isResizing = false;
+        private bool _isNormalState = true;
         private bool _webViewDisabledForResize = false;
+        private RECT _cachedWindowRect;
+        private int _cachedTopResize = 4;
+        private int _cachedSideResize = 6;
+        private int _cachedStripBottom = 18;
         private POINT _dragStartCursor;
         private RECT _dragStartWindowRect;
         private long _lastClickTime = 0;
@@ -145,12 +153,39 @@ namespace DAZNer
         {
             base.OnSourceInitialized(e);
             _windowHandle = new WindowInteropHelper(this).Handle;
+            UpdateCachedWindowMetrics();
             HwndSource.FromHwnd(_windowHandle)?.AddHook(WndProc);
 
             _hookProc = HookCallback;
             using var curProcess = Process.GetCurrentProcess();
             using var curModule = curProcess.MainModule;
             _hookId = SetWindowsHookEx(WH_MOUSE_LL, _hookProc, GetModuleHandle(curModule?.ModuleName), 0);
+        }
+
+        protected override void OnStateChanged(EventArgs e)
+        {
+            base.OnStateChanged(e);
+            _isNormalState = WindowState == WindowState.Normal;
+            UpdateCachedWindowMetrics();
+        }
+
+        private void UpdateCachedWindowMetrics()
+        {
+            if (_windowHandle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            GetWindowRect(_windowHandle, out _cachedWindowRect);
+            double dpiScale = GetDpiForWindow(_windowHandle) / 96.0;
+            if (dpiScale <= 0)
+            {
+                dpiScale = 1.0;
+            }
+
+            _cachedTopResize = (int)Math.Round(4 * dpiScale);
+            _cachedSideResize = (int)Math.Round(6 * dpiScale);
+            _cachedStripBottom = (int)Math.Round(18 * dpiScale);
         }
 
         protected override void OnClosed(EventArgs e)
@@ -181,13 +216,18 @@ namespace DAZNer
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (msg == WM_ENTERSIZEMOVE)
+            if (msg == WM_MOVE || msg == WM_SIZE || msg == WM_DPICHANGED)
+            {
+                UpdateCachedWindowMetrics();
+            }
+            else if (msg == WM_ENTERSIZEMOVE)
             {
                 _isResizing = true;
             }
             else if (msg == WM_EXITSIZEMOVE)
             {
                 _isResizing = false;
+                UpdateCachedWindowMetrics();
                 SetWebViewEnabled(true);
             }
             else if (msg == WM_SIZING)
@@ -310,29 +350,20 @@ namespace DAZNer
                 }
                 else if (msg == WM_MOUSEMOVE && !_isResizing)
                 {
-                    var moveStruct = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
                     bool onBorder = false;
 
-                    if (WindowState == WindowState.Normal && GetWindowRect(_windowHandle, out RECT winRect))
+                    if (_isNormalState)
                     {
-                        int relX = moveStruct.pt.x - winRect.left;
-                        int relY = moveStruct.pt.y - winRect.top;
-                        int winW = winRect.right - winRect.left;
-                        int winH = winRect.bottom - winRect.top;
+                        var moveStruct = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
+                        int relX = moveStruct.pt.x - _cachedWindowRect.left;
+                        int relY = moveStruct.pt.y - _cachedWindowRect.top;
+                        int winW = _cachedWindowRect.right - _cachedWindowRect.left;
+                        int winH = _cachedWindowRect.bottom - _cachedWindowRect.top;
 
                         if (relX >= 0 && relX < winW && relY >= 0 && relY < winH)
                         {
-                            double dpiScale = GetDpiForWindow(_windowHandle) / 96.0;
-                            if (dpiScale <= 0)
-                            {
-                                dpiScale = 1.0;
-                            }
-
-                            int topResize = (int)Math.Round(4 * dpiScale);
-                            int sideResize = (int)Math.Round(6 * dpiScale);
-
-                            if (relX < sideResize || relX >= winW - sideResize ||
-                                relY < topResize || relY >= winH - sideResize)
+                            if (relX < _cachedSideResize || relX >= winW - _cachedSideResize ||
+                                relY < _cachedTopResize || relY >= winH - _cachedSideResize)
                             {
                                 bool isAltDown = (GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
                                 if (!isAltDown)
@@ -358,18 +389,8 @@ namespace DAZNer
 
                         if (pt.x >= 0 && pt.x < clientRect.right && pt.y >= 0 && pt.y < clientRect.bottom)
                         {
-                            double dpiScale = GetDpiForWindow(_windowHandle) / 96.0;
-                            if (dpiScale <= 0)
-                            {
-                                dpiScale = 1.0;
-                            }
-
-                            int topResize = (int)Math.Round(4 * dpiScale);
-                            int sideResize = (int)Math.Round(6 * dpiScale);
-                            int stripBottom = (int)Math.Round(18 * dpiScale);
-
-                            bool inTopStrip = pt.y >= topResize && pt.y < stripBottom &&
-                                              pt.x >= sideResize && pt.x < (clientRect.right - sideResize);
+                            bool inTopStrip = pt.y >= _cachedTopResize && pt.y < _cachedStripBottom &&
+                                              pt.x >= _cachedSideResize && pt.x < (clientRect.right - _cachedSideResize);
                             bool isAltDown = (GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
 
                             if (inTopStrip)
