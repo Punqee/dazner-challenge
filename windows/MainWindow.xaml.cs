@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using Microsoft.Web.WebView2.Wpf;
 
 namespace DAZNer
 {
@@ -35,6 +37,7 @@ namespace DAZNer
         private const uint SWP_NOSIZE = 0x0001;
         private const uint SWP_NOZORDER = 0x0004;
         private const uint SWP_NOACTIVATE = 0x0010;
+        private const string HomeUrl = "https://www.dazn.com/";
 
         [StructLayout(LayoutKind.Sequential)]
         private struct POINT
@@ -127,6 +130,7 @@ namespace DAZNer
         private IntPtr _windowHandle = IntPtr.Zero;
         private IntPtr _hookId = IntPtr.Zero;
         private LowLevelMouseProc? _hookProc;
+        private WebView2? _secondWebView;
 
         private int _paneCount = 1;
         private bool _isDragging = false;
@@ -195,6 +199,14 @@ namespace DAZNer
                 UnhookWindowsHookEx(_hookId);
                 _hookId = IntPtr.Zero;
             }
+
+            if (_secondWebView != null)
+            {
+                _secondWebView.Dispose();
+                _secondWebView = null;
+            }
+
+            webView.Dispose();
             base.OnClosed(e);
         }
 
@@ -210,8 +222,18 @@ namespace DAZNer
             if (wvHandle != IntPtr.Zero)
             {
                 EnableWindow(wvHandle, enabled);
-                _webViewDisabledForResize = shouldDisable;
             }
+
+            if (_secondWebView != null)
+            {
+                IntPtr secondHandle = _secondWebView.Handle;
+                if (secondHandle != IntPtr.Zero)
+                {
+                    EnableWindow(secondHandle, enabled);
+                }
+            }
+
+            _webViewDisabledForResize = shouldDisable;
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -504,11 +526,135 @@ namespace DAZNer
             Topmost = !Topmost;
         }
 
+        public void SetPaneCount(int count)
+        {
+            if (count == _paneCount || (count != 1 && count != 2))
+            {
+                return;
+            }
+
+            if (count == 2)
+            {
+                var pane1 = new WebView2
+                {
+                    DefaultBackgroundColor = System.Drawing.Color.Black,
+                    Source = new Uri(HomeUrl)
+                };
+                Grid.SetColumn(pane1, 2);
+                panesGrid.Children.Add(pane1);
+                _secondWebView = pane1;
+
+                colGap.Width = new GridLength(8);
+                colPane1.Width = new GridLength(1, GridUnitType.Star);
+            }
+            else
+            {
+                colGap.Width = new GridLength(0);
+                colPane1.Width = new GridLength(0);
+
+                if (_secondWebView != null)
+                {
+                    var paneToDispose = _secondWebView;
+                    _secondWebView = null;
+                    try
+                    {
+                        paneToDispose.CoreWebView2?.Stop();
+                    }
+                    catch
+                    {
+                    }
+                    panesGrid.Children.Remove(paneToDispose);
+                    paneToDispose.Dispose();
+                }
+            }
+
+            _paneCount = count;
+            ResizeWindowForPanes(count);
+        }
+
+        private void ResizeWindowForPanes(int count)
+        {
+            if (_windowHandle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            if (WindowState == WindowState.Maximized)
+            {
+                WindowState = WindowState.Normal;
+            }
+
+            if (!GetWindowRect(_windowHandle, out RECT oldRect))
+            {
+                return;
+            }
+
+            int oldWidth = oldRect.right - oldRect.left;
+            int maxW = oldWidth * 2;
+            RECT work = oldRect;
+            bool hasMonitorWork = false;
+
+            IntPtr hMonitor = MonitorFromWindow(_windowHandle, MONITOR_DEFAULTTONEAREST);
+            if (hMonitor != IntPtr.Zero)
+            {
+                var monitorInfo = new MONITORINFO
+                {
+                    cbSize = Marshal.SizeOf<MONITORINFO>()
+                };
+                if (GetMonitorInfo(hMonitor, ref monitorInfo))
+                {
+                    work = monitorInfo.rcWork;
+                    maxW = work.right - work.left;
+                    hasMonitorWork = true;
+                }
+            }
+
+            double ratio = AspectRatio;
+            double scaledW = oldWidth * (count == 2 ? 2.0 : 0.5);
+            int targetWidth = (int)Math.Round(Math.Min(Math.Max(scaledW, 640.0), maxW));
+            int targetHeight = (int)Math.Round(targetWidth / ratio);
+
+            int targetX = oldRect.left;
+            int targetY = oldRect.top;
+
+            if (hasMonitorWork)
+            {
+                if (targetX + targetWidth > work.right)
+                {
+                    targetX = Math.Max(work.left, work.right - targetWidth);
+                }
+                if (targetY + targetHeight > work.bottom)
+                {
+                    targetY = Math.Max(work.top, work.bottom - targetHeight);
+                }
+            }
+
+            SetWindowPos(
+                _windowHandle,
+                IntPtr.Zero,
+                targetX,
+                targetY,
+                targetWidth,
+                targetHeight,
+                SWP_NOZORDER | SWP_NOACTIVATE);
+            UpdateCachedWindowMetrics();
+        }
+
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (Keyboard.Modifiers == ModifierKeys.Control)
             {
-                if (e.Key == Key.F)
+                if (e.Key == Key.D1 || e.Key == Key.NumPad1)
+                {
+                    SetPaneCount(1);
+                    e.Handled = true;
+                }
+                else if (e.Key == Key.D2 || e.Key == Key.NumPad2)
+                {
+                    SetPaneCount(2);
+                    e.Handled = true;
+                }
+                else if (e.Key == Key.F)
                 {
                     FillAndCenter();
                     e.Handled = true;

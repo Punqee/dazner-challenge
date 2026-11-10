@@ -19,7 +19,12 @@
                       GlassFrameThickness="0"
                       UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
-    <Grid Background="Black">
-        <wv2:WebView2 Name="webView" Source="https://www.dazn.com/" />
+    <Grid Name="panesGrid" Background="Black">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Name="colPane0" Width="*" />
+            <ColumnDefinition Name="colGap" Width="0" />
+            <ColumnDefinition Name="colPane1" Width="0" />
+        </Grid.ColumnDefinitions>
+        <wv2:WebView2 Name="webView" Grid.Column="0" Source="https://www.dazn.com/" DefaultBackgroundColor="Black" />
     </Grid>
 </Window>
