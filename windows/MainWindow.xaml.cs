@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Interop;
 
 namespace DAZNer
@@ -27,6 +28,7 @@ namespace DAZNer
         private const int WMSZ_BOTTOMRIGHT = 8;
         private const int VK_MENU = 0x12;
         private const uint GA_ROOT = 2;
+        private const uint MONITOR_DEFAULTTONEAREST = 2;
         private const uint SWP_NOSIZE = 0x0001;
         private const uint SWP_NOZORDER = 0x0004;
         private const uint SWP_NOACTIVATE = 0x0010;
@@ -55,6 +57,15 @@ namespace DAZNer
             public uint flags;
             public uint time;
             public IntPtr dwExtraInfo;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct MONITORINFO
+        {
+            public int cbSize;
+            public RECT rcMonitor;
+            public RECT rcWork;
+            public uint dwFlags;
         }
 
         private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
@@ -103,6 +114,12 @@ namespace DAZNer
 
         [DllImport("user32.dll")]
         private static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
 
         private IntPtr _windowHandle = IntPtr.Zero;
         private IntPtr _hookId = IntPtr.Zero;
@@ -401,6 +418,86 @@ namespace DAZNer
                 }
             }
             return CallNextHookEx(_hookId, nCode, wParam, lParam);
+        }
+
+        public void FillAndCenter()
+        {
+            if (_windowHandle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            if (WindowState == WindowState.Maximized)
+            {
+                WindowState = WindowState.Normal;
+            }
+
+            IntPtr hMonitor = MonitorFromWindow(_windowHandle, MONITOR_DEFAULTTONEAREST);
+            if (hMonitor == IntPtr.Zero)
+            {
+                return;
+            }
+
+            var monitorInfo = new MONITORINFO
+            {
+                cbSize = Marshal.SizeOf<MONITORINFO>()
+            };
+
+            if (!GetMonitorInfo(hMonitor, ref monitorInfo))
+            {
+                return;
+            }
+
+            RECT work = monitorInfo.rcWork;
+            int workWidth = work.right - work.left;
+            int workHeight = work.bottom - work.top;
+            if (workWidth <= 0 || workHeight <= 0)
+            {
+                return;
+            }
+
+            double ratio = AspectRatio;
+            int targetWidth = (int)Math.Round(Math.Min((double)workWidth, workHeight * ratio));
+            int targetHeight = (int)Math.Round(targetWidth / ratio);
+            if (targetHeight > workHeight)
+            {
+                targetHeight = workHeight;
+                targetWidth = (int)Math.Round(targetHeight * ratio);
+            }
+
+            int targetX = work.left + (workWidth - targetWidth) / 2;
+            int targetY = work.top + (workHeight - targetHeight) / 2;
+
+            SetWindowPos(
+                _windowHandle,
+                IntPtr.Zero,
+                targetX,
+                targetY,
+                targetWidth,
+                targetHeight,
+                SWP_NOZORDER | SWP_NOACTIVATE);
+        }
+
+        public void ToggleAlwaysOnTop()
+        {
+            Topmost = !Topmost;
+        }
+
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (e.Key == Key.F)
+                {
+                    FillAndCenter();
+                    e.Handled = true;
+                }
+                else if (e.Key == Key.T)
+                {
+                    ToggleAlwaysOnTop();
+                    e.Handled = true;
+                }
+            }
         }
     }
 }
