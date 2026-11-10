@@ -19,9 +19,9 @@ La versión de macOS está escrita en Swift sobre `WKWebView`. DAZN reproduce co
 - **Lenguaje e interfaz:** C# (.NET) con WPF. Microsoft documenta WebView2 para C# en WPF, WinForms y WinUI 3; WPF es el camino más directo para una ventana sin bordes con dos controles web. Se usa .NET 10.
 - **Proyecto y espacio de nombres:** El proyecto y su espacio de nombres se denominan `DAZNer` (`windows/DAZNer.csproj`, `windows/DAZNer.sln`).
 - **Motor:** WebView2 (Chromium de Edge), un control por panel.
-- **Ventana sin bordes:** estilo sin bordes, franja superior de 14 px que llama a `DragMove`, y Alt + arrastrar desde cualquier punto.
-- **Proporción fija:** interceptar el mensaje `WM_SIZING` para ajustar el tamaño al arrastrar los bordes.
-- **Rellenar y centrar:** área de trabajo del monitor que contiene la ventana, con la proporción actual.
+- **Ventana sin bordes:** estilo sin bordes con `WindowChrome`, franja superior de 14 px (con doble clic para maximizar o restaurar) y `Alt` + arrastrar desde cualquier punto mediante `WH_MOUSE_LL` y `SetWindowPos`, sin dejar elementos XAML (`Border`) ni manejadores de ratón de WPF sin ejecutar.
+- **Proporción fija:** interceptar el mensaje `WM_SIZING` en `WndProc` para ajustar el tamaño al arrastrar los bordes (16:9 con un panel y 32:9 con dos), deshabilitando de forma temporal la ventana hija de `WebView2` (`EnableWindow`) cuando el puntero entra al borde de redimensionado para que `MainWindow` reciba `WM_NCHITTEST`.
+- **Rellenar y centrar y siempre encima:** `Ctrl+F` obtiene el área de trabajo (`rcWork`) del monitor que contiene la ventana mediante `MonitorFromWindow` y `GetMonitorInfo`, calcula el mayor rectángulo con la proporción actual y lo centra con `SetWindowPos`; `Ctrl+T` alterna la propiedad `Topmost`.
 - **Paneles:** una cuadrícula con dos columnas y un hueco de 8 px; el segundo control se crea al elegir dos paneles y se libera (`Dispose`) al volver a uno.
 - **Audio por foco:** propiedad `IsMuted` de cada control, sin JavaScript.
 - **Script compartido:** `AddScriptToExecuteOnDocumentCreated` con `window.__daznerDebug`, `window.__daznerLog` y `window.__pane` definidos antes; el registro llega por el mensaje web del control.
@@ -35,6 +35,7 @@ La versión de macOS está escrita en Swift sobre `WKWebView`. DAZN reproduce co
 - **DRM no verificado en WebView2:** Comparte el motor con Chrome, pero no es Chrome. Se mitigó con la prueba de reproducción del grupo 1, superada en Windows.
 - **Requisitos de compilación sin intervención:** La máquina que compila requiere el SDK de .NET 10 y el runtime de WebView2 instalados previamente. Se documentan en la bitácora y en `README.md`.
 - **Entorno de ejecución de WebView2:** Preinstalado en Windows 11; en Windows 10 desactualizado puede requerir instalación del runtime Evergreen.
+- **Hook global de ratón (`WH_MOUSE_LL`):** Recibe todos los movimientos del ratón del sistema y se ejecuta en el hilo de la interfaz de usuario. Si la aplicación se bloquea, el puntero de todo Windows puede volverse lento; si supera el límite de tiempo del sistema (`LowLevelHooksTimeout`), Windows retira el *hook* sin previo aviso y el arrastre deja de funcionar. Como alternativa futura para la franja superior puede evaluarse el soporte de regiones no cliente de WebView2 (`IsNonClientRegionSupportEnabled` con la propiedad CSS `app-region: drag`).
 - **Varias instancias con una misma carpeta de datos:** Hay que comprobar que el motor lo admite sin bloqueos al implementar el grupo 4.
 
 ## Resultados de la prueba de reproducción
@@ -63,9 +64,9 @@ La versión de macOS está escrita en Swift sobre `WKWebView`. DAZN reproduce co
 
 ## Open Questions
 
-- **¿Dónde vive el clon que se compila?** En el sistema de archivos nativo de Windows (`C:\Users\punqe\dazner-challenge`). El control de versiones con Git para Windows, la compilación con `dotnet` y la ejecución se hacen directamente en Windows nativo.
+- **¿Dónde vive el clon que se compila?** En el sistema de archivos nativo de Windows. El control de versiones con Git para Windows, la compilación con `dotnet` y la ejecución se hacen directamente en Windows nativo.
 - **¿Cómo se evita el ruido de codificación?** El repositorio cuenta con `.gitattributes`, que fija LF para todos los archivos del repositorio (CRLF en disco para `.sln`, `.bat` y `.cmd`) sin modificar `core.autocrlf`, y `.editorconfig`, que fija UTF-8 con BOM para `.cs`, `.xaml` y `.ps1`.
 - **¿Cómo se ejecutan los comandos y *commits*?** Desde Windows nativo (PowerShell y Git para Windows), asegurando que los archivos respeten los finales de línea y la codificación requerida.
 - **¿Hace falta además un `.gitattributes` para los finales de línea?** Resuelta: `.gitattributes` ya fue incorporado a `main` y normalizado en la copia de trabajo.
 - **¿Distribución como carpeta comprimida o como paquete MSIX?** No cambia lo que se construye en esta fase; se decide al empaquetar.
-- **Calidad máxima real de reproducción en WebView2 frente a Chrome:** La prueba inicial validó fluidez en contenido abierto; la reproducción protegida de eventos de pago y su comportamiento en alta definición fue verificada por el mantenedor en su entorno.
+- **Calidad máxima real de reproducción en WebView2 frente a Chrome:** La prueba inicial validó fluidez en contenido abierto y el mantenedor confirmó la reproducción protegida de eventos de pago en su entorno, aunque la resolución o calidad máxima no se midió.
