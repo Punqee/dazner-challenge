@@ -643,6 +643,9 @@ namespace DAZNer
                 return;
             }
 
+            _paneCount = count;
+            ResizeWindowForPanes(count);
+
             if (count == 2)
             {
                 var pane1 = new WebView2
@@ -678,9 +681,6 @@ namespace DAZNer
                     paneToDispose.Dispose();
                 }
             }
-
-            _paneCount = count;
-            ResizeWindowForPanes(count);
 
             if (_focusedPane >= count)
             {
@@ -874,8 +874,7 @@ namespace DAZNer
                     SetPaneCount(2);
                     e.Handled = true;
                 }
-                else if (e.Key == Key.Oem3 || e.Key == Key.Oem5 || e.Key == Key.Oem1 ||
-                         e.Key == Key.OemOpenBrackets || e.Key == Key.OemBackslash || e.Key == Key.Tab)
+                else if (e.Key == Key.Oem3 || e.Key == Key.Oem5 || e.Key == Key.Oem1 || e.Key == Key.Tab)
                 {
                     NextPane();
                     e.Handled = true;
