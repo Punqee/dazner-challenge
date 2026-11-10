@@ -44,6 +44,7 @@ La versión de macOS está escrita en Swift sobre `WKWebView`. DAZN reproduce co
 - **Calidad y fluidez:** Se observó reproducción continua con audio y video fluido en la ventana. La evaluación de calidad fue por inspección visual subjetiva del comportamiento del reproductor dentro de WebView2, sin mediciones de tasa de bits ni extracción de métricas mediante `chrome://media-internals` o panel de estadísticas.
 - **Versiones del entorno de la participante:**
   - Sistema operativo: Windows 11 (NT 10.0.26200.0)
+  - Pantalla: 1 monitor físico (`1920×1080`, área de trabajo útil `1920×1032`); el redimensionado con proporción fija (`WM_SIZING`) y «Rellenar y centrar» (`Ctrl+F`) se verificaron en este monitor, declarando sin probar el escenario en un segundo monitor físico
   - SDK de .NET: 10.0.402 (compilación de proyecto WPF para `net10.0-windows`)
   - Runtime de WebView2: 156.0.4314.58 (paquete NuGet `Microsoft.Web.WebView2` 1.0.4314.35)
 - **Validación del mantenedor (revisión externa):**
@@ -61,6 +62,7 @@ La versión de macOS está escrita en Swift sobre `WKWebView`. DAZN reproduce co
 | Falta del motor de WebView2 en sistemas Windows 10 no actualizados | Windows 10 no siempre incluye preinstalado WebView2 Evergreen Runtime | Verificar en el registro o instalar mediante el instalador Evergreen de WebView2 | Sí, verificar o instalar WebView2 Runtime en Windows 10 |
 | Obstáculo con dependencias de C++ durante pruebas iniciales de ejecución | Falta de bibliotecas de ejecución de Visual C++ en el sistema | Actualizar y reparar los componentes de Visual C++ desde el instalador de Visual Studio | Sí, disponer del Visual C++ Redistributable si el sistema lo requiere |
 | La franja de arrastre en XAML (`Border`) y `PreviewMouseLeftButtonDown` no reciben clics sobre `WebView2`, y `PostMessage(WM_NCLBUTTONDOWN, HTCAPTION)` tras bloquear `WM_LBUTTONDOWN` en `WH_MOUSE_LL` no inicia el movimiento | `WebView2` es un `HwndHost` Win32 que se dibuja por encima de los elementos WPF (*airspace issue*); además, devolver `1` en `WH_MOUSE_LL` impide que Windows marque `VK_LBUTTON` como presionado, por lo que `DefWindowProc` cancela `SC_MOVE` | Interceptar `WM_LBUTTONDOWN`, `WM_MOUSEMOVE` y `WM_LBUTTONUP` con un *hook* `WH_MOUSE_LL`, verificando `GetAncestor(WindowFromPoint(pt), GA_ROOT)` y `GetAsyncKeyState(VK_MENU)`, y desplazando la ventana con `SetWindowPos` | No |
+| Los bordes de redimensionado de `WindowChrome` (`ResizeBorderThickness`) no reciben `WM_NCHITTEST` porque la ventana hija de `WebView2` cubre toda el área cliente | `WindowFromPoint` devuelve `Chrome_RenderWidgetHostHWND` hasta el último píxel del borde interior de `MainWindow`, por lo que Windows no consulta `WM_NCHITTEST` en la ventana principal | Deshabilitar de forma temporal el `HWND` anfitrión de `WebView2` (`EnableWindow`) únicamente mientras el cursor está en el borde de redimensionado en estado normal, permitiendo que `MainWindow` reciba `WM_NCHITTEST` e inicie el bucle nativo `WM_SIZING` | No |
 
 ## Open Questions
 

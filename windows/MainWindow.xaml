@@ -13,7 +13,7 @@
         Background="Black">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0"
-                      ResizeBorderThickness="6,3,6,6"
+                      ResizeBorderThickness="6,4,6,6"
                       CornerRadius="0"
                       GlassFrameThickness="0"
                       UseAeroCaptionButtons="False" />
