@@ -1,10 +1,10 @@
 # Evaluación del reto: Punqee
 
-*Última modificación: 9 de noviembre de 2026, 00:54 (CST)*
+*Última modificación: 9 de noviembre de 2026, 20:52 (CST)*
 
 Revisión de la entrega de Míriam ([@Punqee](https://github.com/Punqee)) al [reto de contribución](../CHALLENGE.md), hecha por el mantenedor con Claude Code (Opus 5.5) en una máquina con Windows. Registra lo que se ejecutó, lo que se observó y una propuesta de calificación con los criterios del reto.
 
-Cómo leer este archivo: las secciones hasta «Veredicto y siguientes pasos» describen la **primera revisión**, tal como estaba la rama entonces, y hablan de la participante en tercera persona; la excepción es «Calificación actual», que se actualiza con cada entrega. Desde «Cómo atender esta revisión» el texto se dirige a la participante («tú») e incluye lo que se pide hoy. Si algo de la primera revisión contradice a «Segunda revisión», manda la segunda.
+Cómo leer este archivo: las secciones hasta «Veredicto y siguientes pasos» describen la **primera revisión**, tal como estaba la rama entonces, y hablan de la participante en tercera persona; la excepción es «Calificación actual», que se actualiza con cada entrega. Desde «Cómo atender esta revisión» el texto se dirige a la participante («tú») e incluye lo que se pide hoy. Si algo de una revisión contradice a otra posterior, manda la más reciente.
 
 ## Datos de la entrega
 
@@ -121,14 +121,14 @@ Es la calificación vigente. Se actualiza cada vez que la participante entrega y
 
 | Criterio | Peso | Calificación | Motivo |
 |---|---|---|---|
-| Disciplina SDD | 30 % | 8 | Siguió el flujo: primero la especificación, luego el README y después el código. Falta confirmar en el PR qué probó de la tarea 2.1 y separar el *commit* que mezcla dos cambios. |
-| Compila en otra máquina sin intervención | 25 % | 8 | Compiló en un clon nuevo siguiendo solo el README, con 0 advertencias y 0 errores. No se volvió a probar la instalación del SDK ni la compilación en Visual Studio. |
-| Calidad de los PR y de los *commits* | 20 % | 7 | Pasa las 16 puertas de `check-pr.sh` y el cuerpo del PR ya se ve con formato. Falta una viñeta del CHANGELOG y un *commit* mezcla dos cambios. |
-| Honestidad | 15 % | 10 | Declara su cuenta de acceso limitado y lo que no probó. Lo que se dijo de más fueron descuidos, no mentiras. |
-| Calidad técnica | 10 % | 6 | La ventana sin bordes funciona, pero usa un *hook* global de ratón, deja código que no se ejecuta y no documenta el riesgo. |
-| **Total ponderado** | | **7.9 / 10** | |
+| Disciplina SDD | 30 % | 9 | Atendió cada revisión por la especificación antes que el código, y dejó sin marcar la tarea 2.2 porque no pudo probar todos sus escenarios. La tarea 2.3 quedó marcada aunque falta el escenario de «pantalla más alta que la proporción». |
+| Compila en otra máquina sin intervención | 25 % | 8 | Compiló en un clon nuevo siguiendo solo el README, con 0 advertencias y 0 errores, y volvió a compilar igual en la tercera entrega. No se volvió a probar la instalación del SDK ni la compilación en Visual Studio. |
+| Calidad de los PR y de los *commits* | 20 % | 9 | Pasa las 16 puertas de `check-pr.sh`, los *commits* son atómicos, el CHANGELOG está completo y en orden, y el PR detalla qué probó de cada tarea y qué no. |
+| Honestidad | 15 % | 10 | Declara su cuenta de acceso limitado, su único monitor y lo que no probó, y corrigió la afirmación sobre la calidad de reproducción. |
+| Calidad técnica | 10 % | 7 | La ventana, la proporción fija, rellenar y centrar y siempre encima funcionan, y el riesgo del *hook* está documentado. El *hook* global ahora también procesa cada movimiento del ratón, lo que aumenta ese riesgo. |
+| **Total ponderado** | | **8.7 / 10** | |
 
-Avance verificado: 5 de las 18 tareas del cambio `add-windows-port` (1.1 a 1.4 y 2.1). Quedan las tareas 2.2 a 5.4.
+Avance verificado: 6 de las 18 tareas del cambio `add-windows-port` (1.1 a 1.4, 2.1 y 2.3). La tarea 2.2 funciona con un panel en un monitor y queda abierta hasta probarla con dos paneles y en dos monitores. Quedan la 2.2 y de la 3.1 a la 5.4.
 
 ## Veredicto y siguientes pasos
 
@@ -168,7 +168,7 @@ El mantenedor revisó la rama que reescribiste, con su último *commit* `feat(wi
 - **Tarea 2.1: funciona** en el equipo del mantenedor, probada por RDP. La ventana responde al clic, se arrastra desde la franja, se mueve con `Alt` desde cualquier punto, y el doble clic la maximiza y la restaura sin tapar la barra de tareas. El mantenedor no puede probar el efecto del *hook* de ratón en un equipo con monitor y asume ese riesgo.
 - **Calificación:** la primera revisión califica la entrega tal como se presentó entonces; su honestidad se ajustó a 10 y el total quedó en 6.6, porque lo que se afirmó de más fueron descuidos y no mentiras. La calificación vigente está en «Calificación actual» y se mueve conforme la participante entregue y el mantenedor verifique cada grupo de tareas.
 
-**Qué se te pide ahora**, en este orden:
+**Qué se pidió en la segunda revisión** (ya atendido en la tercera entrega):
 
 1. Corregir en `design.md` la afirmación de que la reproducción «en alta definición» fue verificada por el mantenedor: nadie midió la calidad. Quita «en alta definición» o di que no se midió.
 2. Agregar a «Risks / Trade-offs» de `design.md` el riesgo del *hook* `WH_MOUSE_LL`: recibe todos los movimientos del ratón del sistema, corre en el hilo de la interfaz, y si la aplicación se traba el ratón de todo Windows se pone lento o Windows quita el *hook* sin avisar y el arrastre deja de funcionar. Quitar o justificar el código que nunca se ejecuta (`DragStrip_MouseLeftButtonDown`, `Window_PreviewMouseLeftButtonDown` y el `Border` de `MainWindow.xaml`). Una alternativa a evaluar es la región de arrastre de WebView2 con `IsNonClientRegionSupportEnabled` y la propiedad CSS `app-region: drag`.
@@ -177,6 +177,22 @@ El mantenedor revisó la rama que reescribiste, con su último *commit* `feat(wi
 5. Menores: quitar la ruta personal (`C:\Users\punqe\...`) de `design.md` y dejar una línea en blanco antes de los bloques de código dentro de las listas del README.
 
 Todo se atiende como indica «Cómo atender esta revisión»: primero `design.md` y `tasks.md`, después el código, con *commits* atómicos reescribiendo tu propia rama y `git push --force-with-lease`.
+
+## Tercera revisión (9 de noviembre de 2026, noche)
+
+El mantenedor revisó la rama en su último *commit*, `feat(windows): add fill and center and always-on-top window actions`, ya sobre el `main` actual. El detalle completo está en [review/2026-11-09_punqee_review_2.md](../review/2026-11-09_punqee_review_2.md). Resumen:
+
+- **Puertas:** `check-pr.sh` pasa las 16 comprobaciones (OpenSpec sigue sin validarse por falta de Node en la máquina del mantenedor) y ningún archivo tiene CRLF en el repositorio.
+- **Compilación:** `dotnet build windows\DAZNer.sln`, con 0 advertencias y 0 errores.
+- **Atendido de la segunda revisión:** todo. `design.md` ya no dice que se verificó la alta definición y documenta el riesgo del *hook* con su alternativa; el renombre del proyecto está en su *commit* `refactor`; el CHANGELOG tiene todas las viñetas en el orden de los *commits*; se retiró el código que no se ejecutaba y la ruta personal; y el PR detalla qué probaste de la tarea 2.1.
+- **Prueba del mantenedor, por RDP: todo funciona.** La ventana conserva la proporción 16:9 al arrastrar los bordes y las esquinas; `Ctrl+F` la llena y la centra en el área útil aun con el foco en DAZN; `Ctrl+T` la deja siempre encima y la regresa a su nivel normal; los controles de DAZN junto al borde responden; y el arrastre desde la franja, `Alt` + arrastrar y el doble clic siguen funcionando.
+- **Tareas:** la 2.3 queda verificada. La 2.2 se deja abierta, como la dejaste: falta probarla con dos paneles (grupo 3) y en dos monitores.
+
+**Qué se te pide ahora:**
+
+1. En la tarea 2.3 falta el escenario «Pantalla más alta que la proporción» de `window-chrome`, que en tu monitor solo se da con dos paneles (32:9). Anótalo en «Qué no se probó» del PR; el mantenedor lo verifica cuando exista el segundo panel. No hace falta desmarcar la tarea.
+2. Sigue con el grupo 3 (paneles), igual que hasta ahora: primero `design.md` y `tasks.md`, después el código.
+3. Opcional: el *hook* procesa ahora cada movimiento del ratón del sistema y en cada uno consulta el rectángulo y los DPI de la ventana. Si puedes, haz esa consulta solo cuando el puntero esté sobre la ventana o guarda el rectángulo al moverla o redimensionarla.
 
 ## Cómo traer los cambios de `main` a tu rama
 
