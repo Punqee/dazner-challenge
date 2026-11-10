@@ -10,8 +10,7 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         ResizeMode="CanResize"
-        Background="Black"
-        PreviewMouseLeftButtonDown="Window_PreviewMouseLeftButtonDown">
+        Background="Black">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0"
                       ResizeBorderThickness="6,3,6,6"
@@ -21,7 +20,5 @@
     </WindowChrome.WindowChrome>
     <Grid Background="Black">
         <wv2:WebView2 Name="webView" Source="https://www.dazn.com/" />
-        <Border Name="dragStrip" Height="14" VerticalAlignment="Top" Background="Transparent"
-                MouseLeftButtonDown="DragStrip_MouseLeftButtonDown" />
     </Grid>
 </Window>
