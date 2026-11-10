@@ -17,8 +17,8 @@
 
 - [x] 3.1 Modo de uno y dos paneles con hueco de 8 px dentro del ancho de la ventana; verificar las medidas del escenario de «Hueco entre paneles» (solo se puede verificar en Windows).
 - [x] 3.2 Crear el segundo panel a demanda y liberarlo al volver a uno, sin refrescar el primero; verificar que el primer panel sigue reproduciendo y que el proceso del segundo desaparece del Administrador de tareas (solo se puede verificar en Windows).
-- [ ] 3.3 Audio por foco con `IsMuted`, cambio de panel y abrir dirección; verificar los escenarios de «Audio por foco» y de abrir dirección (solo se puede verificar en Windows).
-- [ ] 3.4 Abrir en el mismo panel los enlaces de ventana nueva; verificar el escenario de `playback` (solo se puede verificar en Windows).
+- [x] 3.3 Audio por foco con `IsMuted`, cambio de panel y abrir dirección; verificar los escenarios de «Audio por foco» y de abrir dirección (solo se puede verificar en Windows).
+- [x] 3.4 Abrir en el mismo panel los enlaces de ventana nueva; verificar el escenario de `playback` (solo se puede verificar en Windows).
 
 ## 4. Pantalla completa y sesión
 
