@@ -1,6 +1,6 @@
 # Evaluación del reto: Punqee
 
-*Última modificación: 9 de noviembre de 2026, 20:52 (CST)*
+*Última modificación: 9 de noviembre de 2026, 22:52 (CST)*
 
 Revisión de la entrega de Míriam ([@Punqee](https://github.com/Punqee)) al [reto de contribución](../CHALLENGE.md), hecha por el mantenedor con Claude Code (Opus 5.5) en una máquina con Windows. Registra lo que se ejecutó, lo que se observó y una propuesta de calificación con los criterios del reto.
 
@@ -121,14 +121,14 @@ Es la calificación vigente. Se actualiza cada vez que la participante entrega y
 
 | Criterio | Peso | Calificación | Motivo |
 |---|---|---|---|
-| Disciplina SDD | 30 % | 9 | Atendió cada revisión por la especificación antes que el código, y dejó sin marcar la tarea 2.2 porque no pudo probar todos sus escenarios. La tarea 2.3 quedó marcada aunque falta el escenario de «pantalla más alta que la proporción». |
-| Compila en otra máquina sin intervención | 25 % | 8 | Compiló en un clon nuevo siguiendo solo el README, con 0 advertencias y 0 errores, y volvió a compilar igual en la tercera entrega. No se volvió a probar la instalación del SDK ni la compilación en Visual Studio. |
+| Disciplina SDD | 30 % | 9 | Atendió cada revisión por la especificación antes que el código, marcó cada tarea en el *commit* que la implementa y después de probarla, y dejó sin marcar la tarea 2.2 porque no pudo probarla en dos monitores. |
+| Compila en otra máquina sin intervención | 25 % | 8 | Compiló en un clon nuevo siguiendo solo el README, con 0 advertencias y 0 errores, y volvió a compilar igual en la cuarta entrega. No se volvió a probar la instalación del SDK ni la compilación en Visual Studio. |
 | Calidad de los PR y de los *commits* | 20 % | 9 | Pasa las 16 puertas de `check-pr.sh`, los *commits* son atómicos, el CHANGELOG está completo y en orden, y el PR detalla qué probó de cada tarea y qué no. |
-| Honestidad | 15 % | 10 | Declara su cuenta de acceso limitado, su único monitor y lo que no probó, y corrigió la afirmación sobre la calidad de reproducción. |
-| Calidad técnica | 10 % | 7 | La ventana, la proporción fija, rellenar y centrar y siempre encima funcionan, y el riesgo del *hook* está documentado. El *hook* global ahora también procesa cada movimiento del ratón, lo que aumenta ese riesgo. |
-| **Total ponderado** | | **8.7 / 10** | |
+| Honestidad | 15 % | 10 | Declara su cuenta de acceso limitado, su único monitor y lo que no probó, incluido el contenido con el que probó el segundo panel. |
+| Calidad técnica | 10 % | 8 | La ventana, la proporción fija, rellenar y centrar, siempre encima y los dos paneles con audio por foco funcionan, y el *hook* ya no consulta la ventana en cada movimiento del ratón. Quedan el orden en que se abre el segundo panel, distinto del de macOS, y teclas de más para cambiar de panel. |
+| **Total ponderado** | | **8.8 / 10** | |
 
-Avance verificado: 6 de las 18 tareas del cambio `add-windows-port` (1.1 a 1.4, 2.1 y 2.3). La tarea 2.2 funciona con un panel en un monitor y queda abierta hasta probarla con dos paneles y en dos monitores. Quedan la 2.2 y de la 3.1 a la 5.4.
+Avance verificado: 10 de las 18 tareas del cambio `add-windows-port` (1.1 a 1.4, 2.1, 2.3 y 3.1 a 3.4). La tarea 2.2 funciona con uno y dos paneles en un monitor y queda abierta por el escenario de dos monitores. Quedan la 2.2 y de la 4.1 a la 5.4.
 
 ## Veredicto y siguientes pasos
 
@@ -188,11 +188,27 @@ El mantenedor revisó la rama en su último *commit*, `feat(windows): add fill a
 - **Prueba del mantenedor, por RDP: todo funciona.** La ventana conserva la proporción 16:9 al arrastrar los bordes y las esquinas; `Ctrl+F` la llena y la centra en el área útil aun con el foco en DAZN; `Ctrl+T` la deja siempre encima y la regresa a su nivel normal; los controles de DAZN junto al borde responden; y el arrastre desde la franja, `Alt` + arrastrar y el doble clic siguen funcionando.
 - **Tareas:** la 2.3 queda verificada. La 2.2 se deja abierta, como la dejaste: falta probarla con dos paneles (grupo 3) y en dos monitores.
 
-**Qué se te pide ahora:**
+**Qué se pidió en la tercera revisión** (ya atendido en la cuarta entrega):
 
 1. En la tarea 2.3 falta el escenario «Pantalla más alta que la proporción» de `window-chrome`, que en tu monitor solo se da con dos paneles (32:9). Anótalo en «Qué no se probó» del PR; el mantenedor lo verifica cuando exista el segundo panel. No hace falta desmarcar la tarea.
 2. Sigue con el grupo 3 (paneles), igual que hasta ahora: primero `design.md` y `tasks.md`, después el código.
 3. Opcional: el *hook* procesa ahora cada movimiento del ratón del sistema y en cada uno consulta el rectángulo y los DPI de la ventana. Si puedes, haz esa consulta solo cuando el puntero esté sobre la ventana o guarda el rectángulo al moverla o redimensionarla.
+
+## Cuarta revisión (9 de noviembre de 2026, noche)
+
+El mantenedor revisó la rama en su último *commit*, `feat(windows): add focus audio muting, pane switching, URL dialog and same-pane links`, ya sobre el `main` actual. El detalle completo está en [review/2026-11-09_punqee_review_3.md](../review/2026-11-09_punqee_review_3.md). Resumen:
+
+- **Puertas:** `check-pr.sh` pasa las 16 comprobaciones (OpenSpec sigue sin validarse por falta de Node en la máquina del mantenedor) y ningún archivo tiene CRLF en el repositorio.
+- **Compilación:** `dotnet build windows\DAZNer.sln`, con 0 advertencias y 0 errores.
+- **Atendido de la tercera revisión:** todo, incluida la sugerencia opcional. Probaste «Pantalla más alta que la proporción» con dos paneles y anotaste en el PR lo que falta con uno, y el *hook* usa el rectángulo y los DPI guardados en lugar de consultarlos en cada movimiento.
+- **Prueba del mantenedor, por RDP: todo funciona.** `Ctrl+2` abre el segundo panel sin recargar el primero; el audio sigue al panel con foco, por clic y con `Ctrl+Tab`; el silencio puesto desde el reproductor se respeta; `Ctrl+L` carga la dirección solo en el panel con foco; los enlaces de ventana nueva se abren en el mismo panel; con dos paneles la ventana conserva 32:9 y `Ctrl+F` la centra; y `Ctrl+1` quita el segundo panel sin interrumpir el primero.
+- **Tareas:** quedan verificadas la 2.3 por completo y de la 3.1 a la 3.4. La 2.2 sigue abierta solo por el escenario de dos monitores.
+
+**Qué se te pide ahora:**
+
+1. Al abrir el segundo panel, macOS cambia primero el tamaño de la ventana y después el *layout*, para que DAZN no rehaga el reproductor del primer panel. Tu versión ajusta primero las columnas del `Grid` y después la ventana. En la prueba funcionó, pero invierte el orden como en macOS o explica en `design.md` por qué no afecta.
+2. Para cambiar de panel, la especificación pide `` Ctrl+` `` y el código acepta seis teclas (`Oem3`, `Oem5`, `Oem1`, `OemOpenBrackets`, `OemBackslash` y `Tab`), aunque `design.md` menciona solo tres. Documenta cada tecla con la distribución de teclado que la motiva, o quita las que sobran.
+3. Sigue con el grupo 4 (pantalla completa y sesión), igual que hasta ahora: primero `design.md` y `tasks.md`, después el código.
 
 ## Cómo traer los cambios de `main` a tu rama
 
