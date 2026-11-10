@@ -9,7 +9,7 @@
 
 ## 2. Ventana
 
-- [ ] 2.1 Ventana sin bordes con franja de arrastre de 14 px y Alt + arrastrar, retirando elementos y manejadores de ratón de WPF sin ejecutar; verificar los escenarios de «Mover la ventana» de `window-chrome` (solo se puede verificar en Windows).
+- [x] 2.1 Ventana sin bordes con franja de arrastre de 14 px y Alt + arrastrar, retirando elementos y manejadores de ratón de WPF sin ejecutar; verificar los escenarios de «Mover la ventana» de `window-chrome` (solo se puede verificar en Windows).
 - [ ] 2.2 Proporción fija 16:9 y 32:9 al arrastrar los bordes con `WM_SIZING`; verificar los escenarios de «Proporción fija» en un monitor y en dos (solo se puede verificar en Windows).
 - [ ] 2.3 Rellenar y centrar sobre el área de trabajo del monitor, y siempre encima; verificar los escenarios de ambos requisitos (solo se puede verificar en Windows).
 

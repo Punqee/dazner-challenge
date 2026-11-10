@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Interop;
 
 namespace DAZNer
@@ -226,26 +225,6 @@ namespace DAZNer
                 }
             }
             return CallNextHookEx(_hookId, nCode, wParam, lParam);
-        }
-
-        private void DragStrip_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 2)
-            {
-                WindowState = (WindowState == WindowState.Maximized) ? WindowState.Normal : WindowState.Maximized;
-            }
-            else
-            {
-                DragMove();
-            }
-        }
-
-        private void Window_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (Keyboard.Modifiers.HasFlag(ModifierKeys.Alt))
-            {
-                DragMove();
-            }
         }
     }
 }
