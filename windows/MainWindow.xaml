@@ -10,7 +10,8 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         ResizeMode="CanResize"
-        Background="Black">
+        Background="Black"
+        PreviewKeyDown="Window_PreviewKeyDown">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0"
                       ResizeBorderThickness="6,4,6,6"
