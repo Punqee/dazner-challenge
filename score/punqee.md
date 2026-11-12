@@ -1,6 +1,6 @@
 # Evaluación del reto: Punqee
 
-*Última modificación: 9 de noviembre de 2026, 22:52 (CST)*
+*Última modificación: 12 de noviembre de 2026, 00:24 (CST)*
 
 Revisión de la entrega de Míriam ([@Punqee](https://github.com/Punqee)) al [reto de contribución](../CHALLENGE.md), hecha por el mantenedor con Claude Code (Opus 5.5) en una máquina con Windows. Registra lo que se ejecutó, lo que se observó y una propuesta de calificación con los criterios del reto.
 
@@ -121,14 +121,14 @@ Es la calificación vigente. Se actualiza cada vez que la participante entrega y
 
 | Criterio | Peso | Calificación | Motivo |
 |---|---|---|---|
-| Disciplina SDD | 30 % | 9 | Atendió cada revisión por la especificación antes que el código, marcó cada tarea en el *commit* que la implementa y después de probarla, y dejó sin marcar la tarea 2.2 porque no pudo probarla en dos monitores. |
-| Compila en otra máquina sin intervención | 25 % | 8 | Compiló en un clon nuevo siguiendo solo el README, con 0 advertencias y 0 errores, y volvió a compilar igual en la cuarta entrega. No se volvió a probar la instalación del SDK ni la compilación en Visual Studio. |
-| Calidad de los PR y de los *commits* | 20 % | 9 | Pasa las 16 puertas de `check-pr.sh`, los *commits* son atómicos, el CHANGELOG está completo y en orden, y el PR detalla qué probó de cada tarea y qué no. |
-| Honestidad | 15 % | 10 | Declara su cuenta de acceso limitado, su único monitor y lo que no probó, incluido el contenido con el que probó el segundo panel. |
-| Calidad técnica | 10 % | 8 | La ventana, la proporción fija, rellenar y centrar, siempre encima y los dos paneles con audio por foco funcionan, y el *hook* ya no consulta la ventana en cada movimiento del ratón. Quedan el orden en que se abre el segundo panel, distinto del de macOS, y teclas de más para cambiar de panel. |
-| **Total ponderado** | | **8.8 / 10** | |
+| Disciplina SDD | 30 % | 9 | Atendió cada revisión por la especificación antes que el código y dejó sin marcar lo que no pudo probar (la 2.2 en dos monitores y la 4.2 con *multiview*). Agregó `Ctrl+R` y `Ctrl+H`, de la tarea 5.1, sin registrarlos en `tasks.md` ni en el diseño. |
+| Compila en otra máquina sin intervención | 25 % | 8 | Compiló en un clon nuevo siguiendo solo el README, con 0 advertencias y 0 errores, y volvió a compilar igual en la quinta entrega, con el script compartido copiado junto al ejecutable. No se volvió a probar la instalación del SDK ni la compilación en Visual Studio. |
+| Calidad de los PR y de los *commits* | 20 % | 7 | `check-pr.sh` falla: `CHANGELOG.md` cambia en dos *commits*, y un PR así se rechaza sin revisar el código. Los *commits* siguen siendo atómicos y el PR detalla qué probó y qué no. Sube en cuanto pase la comprobación. |
+| Honestidad | 15 % | 10 | Declara su cuenta de acceso limitado, su único monitor y lo que no probó, incluido el *multiview* de la tarea 4.2. |
+| Calidad técnica | 10 % | 7 | La ventana, los paneles, la sesión compartida entre instancias y la pantalla completa del video principal funcionan, y el diseño deja apagados el guardado de contraseñas y el inspector fuera de `--debug`. La pantalla completa del *multiview*, el caso por el que existe el script compartido, no funciona porque su hoja de estilo no se aplica. |
+| **Total ponderado** | | **8.3 / 10** | |
 
-Avance verificado: 10 de las 18 tareas del cambio `add-windows-port` (1.1 a 1.4, 2.1, 2.3 y 3.1 a 3.4). La tarea 2.2 funciona con uno y dos paneles en un monitor y queda abierta por el escenario de dos monitores. Quedan la 2.2 y de la 4.1 a la 5.4.
+Avance verificado: 13 de las 18 tareas del cambio `add-windows-port` (1.1 a 1.4, 2.1 a 2.3, 3.1 a 3.4, 4.1 y 4.3). La 4.2 no pasa con *multiview*. Quedan la 4.2 y de la 5.1 a la 5.4.
 
 ## Veredicto y siguientes pasos
 
@@ -204,11 +204,34 @@ El mantenedor revisó la rama en su último *commit*, `feat(windows): add focus 
 - **Prueba del mantenedor, por RDP: todo funciona.** `Ctrl+2` abre el segundo panel sin recargar el primero; el audio sigue al panel con foco, por clic y con `Ctrl+Tab`; el silencio puesto desde el reproductor se respeta; `Ctrl+L` carga la dirección solo en el panel con foco; los enlaces de ventana nueva se abren en el mismo panel; con dos paneles la ventana conserva 32:9 y `Ctrl+F` la centra; y `Ctrl+1` quita el segundo panel sin interrumpir el primero.
 - **Tareas:** quedan verificadas la 2.3 por completo y de la 3.1 a la 3.4. La 2.2 sigue abierta solo por el escenario de dos monitores.
 
-**Qué se te pide ahora:**
+**Qué se pidió en la cuarta revisión** (ya atendido en la quinta entrega):
 
 1. Al abrir el segundo panel, macOS cambia primero el tamaño de la ventana y después el *layout*, para que DAZN no rehaga el reproductor del primer panel. Tu versión ajusta primero las columnas del `Grid` y después la ventana. En la prueba funcionó, pero invierte el orden como en macOS o explica en `design.md` por qué no afecta.
 2. Para cambiar de panel, la especificación pide `` Ctrl+` `` y el código acepta seis teclas (`Oem3`, `Oem5`, `Oem1`, `OemOpenBrackets`, `OemBackslash` y `Tab`), aunque `design.md` menciona solo tres. Documenta cada tecla con la distribución de teclado que la motiva, o quita las que sobran.
 3. Sigue con el grupo 4 (pantalla completa y sesión), igual que hasta ahora: primero `design.md` y `tasks.md`, después el código.
+
+## Quinta revisión (12 de noviembre de 2026)
+
+El mantenedor revisó la rama en su último *commit*, `feat(windows): add shared fullscreen script, debug logging and persistent session`, ya sobre el `main` actual, y la probó por RDP con dos monitores y con su cuenta. El detalle completo, con el diagnóstico de la falla, está en [review/2026-11-12_punqee_review.md](../review/2026-11-12_punqee_review.md). Resumen:
+
+- **Puertas: `check-pr.sh` falla.** `CHANGELOG.md` cambia en `88a9129` y en `255c5d5`, y solo puede cambiar en el último *commit*.
+- **Compilación:** `dotnet build windows\DAZNer.sln`, con 0 advertencias y 0 errores.
+- **Atendido de la cuarta revisión:** todo. La ventana cambia de tamaño antes que el `Grid`, como en macOS, y las cuatro teclas de «siguiente panel» están documentadas.
+- **Prueba del mantenedor:**
+  - **Funciona:**
+    - La pantalla completa del video principal con uno y dos paneles, y `Esc`.
+    - `--debug`, con `debug.log` y el inspector, que no abre sin `--debug`.
+    - La sesión al reabrir y en tres instancias que reproducen a la vez.
+    - La proporción fija y `Ctrl+F` en un segundo monitor.
+  - **Falla:** la pantalla completa del *multiview*. Con un video, ninguno se ve. Con la general, los videos llenan la ventana, pero se ve el resto de la página. `debug.log` indica que la hoja de estilo de `fill-fullscreen.js` no se aplica: el elemento con `__fs` conserva `position: relative`.
+- **Tareas:** quedan verificadas la 2.2 (ya puedes marcarla), la 4.1 y la 4.3. La 4.2 no pasa.
+
+**Qué se te pide ahora:**
+
+1. Corrige el CHANGELOG para que cambie solo en el último *commit*, reescribiendo tu rama, y comprueba que `check-pr.sh` pase sin fallos antes de subir.
+2. Haz que la hoja de estilo de `fill-fullscreen.js` se aplique, sin modificar el script compartido; el sospechoso es el puente de `document.head`. Primero en `design.md` y `tasks.md`, después en el código. No necesitas *multiview* para comprobarlo: con `--debug`, evalúa en la consola del inspector `[...document.querySelectorAll('style')].some(s => s.textContent.includes('.__fs'))` (debe dar `true`) y comprueba que un elemento con la clase `__fs` tenga `position: fixed` en su estilo calculado. Agrega esa comprobación a la verificación de la tarea 4.2; el mantenedor vuelve a probar el *multiview* con su cuenta.
+3. Marca la tarea 2.2 y anota en el PR que la verificó el mantenedor en dos monitores.
+4. Pasa `Ctrl+R` y `Ctrl+H` a la tarea 5.1, o documéntalos en `design.md` y en el *commit* en el que entran.
 
 ## Cómo traer los cambios de `main` a tu rama
 

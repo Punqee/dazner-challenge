@@ -3,6 +3,11 @@
 **Nota:** Todas las fechas están en zona horaria CST de Ciudad de México (UTC-6).
 
 <!-- markdownlint-disable MD013 MD024 MD022 MD032 -->
+## [2026-11-12] - Quinta revisión del reto de Punqee
+
+- docs: actualiza `score/punqee.md` tras la quinta revisión: la calificación actual baja de 8.8 a 8.3 / 10 (calidad de los PR y de los *commits* de 9 a 7 porque `check-pr.sh` falla al cambiar `CHANGELOG.md` en dos *commits*, y calidad técnica de 8 a 7 porque la pantalla completa del *multiview* no funciona), el avance verificado pasa a 13 de las 18 tareas (se verifican la 2.2, la 4.1 y la 4.3; la 4.2 no pasa con *multiview*), la lista de la cuarta revisión queda como atendida y se agrega la sección «Quinta revisión (12 de noviembre de 2026)» con lo que se le pide ahora: corregir el CHANGELOG, lograr que la hoja de estilo de `fill-fullscreen.js` se aplique, marcar la tarea 2.2 y pasar `Ctrl+R` y `Ctrl+H` a la tarea 5.1
+- docs: agrega `review/2026-11-12_punqee_review.md`, la quinta revisión de la entrega de @Punqee al reto de contribución (PR #5, rama `challenge/punqee/add-windows-port`): las puertas automáticas, la compilación, lo que atendió de la cuarta revisión, la prueba por RDP con dos monitores del grupo 4 (pantalla completa del video principal, `--debug` y sesión compartida entre instancias) y el diagnóstico de la falla de la pantalla completa del *multiview*
+
 ## [2026-11-09] - Segunda revisión del reto de Punqee
 
 - docs: actualiza `score/punqee.md` tras la cuarta revisión: la calificación actual sube de 8.7 a 8.8 / 10 (calidad técnica de 7 a 8 porque el *hook* ya no consulta la ventana en cada movimiento del ratón y los dos paneles con audio por foco funcionan), el avance verificado pasa a 10 de las 18 tareas (se verifican la 2.3 completa y de la 3.1 a la 3.4; la 2.2 sigue abierta por el escenario de dos monitores), la lista de la tercera revisión queda como atendida y se agrega la sección «Cuarta revisión (9 de noviembre de 2026, noche)» con lo que se le pide ahora: el orden en que se abre el segundo panel, las teclas para cambiar de panel y el grupo 4
