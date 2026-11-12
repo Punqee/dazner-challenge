@@ -22,9 +22,9 @@
 
 ## 4. Pantalla completa y sesión
 
-- [ ] 4.1 Cargar `shared/fill-fullscreen.js` con las variables previas y enlazar `window.__daznerLog` al mensaje web; verificar con `--debug` que `debug.log` recibe eventos (solo se puede verificar en Windows).
+- [x] 4.1 Cargar `shared/fill-fullscreen.js` con las variables previas y enlazar `window.__daznerLog` al mensaje web; verificar con `--debug` que `debug.log` recibe eventos (solo se puede verificar en Windows).
 - [ ] 4.2 Probar la pantalla completa del video principal y de uno secundario, la general con cuatro videos y Esc; verificar los escenarios de `fullscreen-emulation` (solo se puede verificar en Windows).
-- [ ] 4.3 Sesión persistente en la carpeta de datos propia, compartida entre paneles e instancias; verificar los escenarios de `session` abriendo tres instancias (solo se puede verificar en Windows).
+- [x] 4.3 Sesión persistente en la carpeta de datos propia, compartida entre paneles e instancias; verificar los escenarios de `session` abriendo tres instancias (solo se puede verificar en Windows).
 
 ## 5. Atajos, paquete y documentación
 

@@ -25,6 +25,6 @@
             <ColumnDefinition Name="colGap" Width="0" />
             <ColumnDefinition Name="colPane1" Width="0" />
         </Grid.ColumnDefinitions>
-        <wv2:WebView2 Name="webView" Grid.Column="0" Source="https://www.dazn.com/" DefaultBackgroundColor="Black" />
+        <wv2:WebView2 Name="webView" Grid.Column="0" DefaultBackgroundColor="Black" />
     </Grid>
 </Window>
