@@ -1,9 +1,12 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 
 namespace DAZNer
@@ -131,6 +134,12 @@ namespace DAZNer
         private IntPtr _hookId = IntPtr.Zero;
         private LowLevelMouseProc? _hookProc;
         private WebView2? _secondWebView;
+        private Task<CoreWebView2Environment>? _webViewEnvTask;
+
+        private readonly bool _debugMode;
+        private readonly string _debugLogPath;
+        private readonly object _debugLogLock = new();
+        private readonly string? _fillScript;
 
         private int _paneCount = 1;
         private int _focusedPane = 0;
@@ -151,8 +160,35 @@ namespace DAZNer
 
         public MainWindow()
         {
+            string[] cmdArgs = Environment.GetCommandLineArgs();
+            _debugMode = Array.Exists(cmdArgs, arg => string.Equals(arg, "--debug", StringComparison.Ordinal));
+            _debugLogPath = Path.Combine(AppContext.BaseDirectory, "debug.log");
+
+            string scriptPath = Path.Combine(AppContext.BaseDirectory, "fill-fullscreen.js");
+            if (File.Exists(scriptPath))
+            {
+                try
+                {
+                    _fillScript = File.ReadAllText(scriptPath, Encoding.UTF8);
+                }
+                catch
+                {
+                    _fillScript = null;
+                }
+            }
+
+            if (string.IsNullOrEmpty(_fillScript))
+            {
+                Console.Error.WriteLine("Falta fill-fullscreen.js junto al ejecutable; la pantalla completa no se emulara.");
+                MessageBox.Show(
+                    "La pantalla completa de DAZN no se emulará. Compila el proyecto para copiar shared/fill-fullscreen.js junto al ejecutable.",
+                    "Falta fill-fullscreen.js",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+
             InitializeComponent();
-            ConfigureWebView(webView, 0);
+            Loaded += (_, _) => _ = InitializePaneAsync(webView, 0, HomeUrl);
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -251,7 +287,35 @@ namespace DAZNer
             return null;
         }
 
-        private void ConfigureWebView(WebView2 pane, int index)
+        private Task<CoreWebView2Environment> GetWebViewEnvironmentAsync()
+        {
+            if (_webViewEnvTask == null)
+            {
+                string userDataFolder = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "DAZNer");
+                Directory.CreateDirectory(userDataFolder);
+                _webViewEnvTask = CoreWebView2Environment.CreateAsync(null, userDataFolder);
+            }
+            return _webViewEnvTask;
+        }
+
+        private void WriteDebugLog(string message)
+        {
+            string line = $"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss 'UTC'}] {message}\n";
+            lock (_debugLogLock)
+            {
+                try
+                {
+                    File.AppendAllText(_debugLogPath, line, new UTF8Encoding(false));
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        private async Task InitializePaneAsync(WebView2 pane, int index, string initialUrl)
         {
             pane.GotFocus += (_, _) =>
             {
@@ -261,39 +325,112 @@ namespace DAZNer
                 }
             };
 
-            void AttachCoreEvents()
+            try
             {
-                if (pane.CoreWebView2 == null)
+                var env = await GetWebViewEnvironmentAsync();
+                if (index == 1 && pane != _secondWebView)
                 {
                     return;
                 }
+                await pane.EnsureCoreWebView2Async(env);
+            }
+            catch
+            {
+                return;
+            }
 
-                pane.CoreWebView2.NewWindowRequested += (_, args) =>
+            if (pane.CoreWebView2 == null || (index == 1 && pane != _secondWebView))
+            {
+                return;
+            }
+
+            pane.CoreWebView2.Settings.AreDevToolsEnabled = _debugMode;
+            pane.CoreWebView2.Settings.IsPasswordAutosaveEnabled = false;
+            pane.CoreWebView2.Settings.IsGeneralAutofillEnabled = false;
+
+            if (_debugMode)
+            {
+                pane.CoreWebView2.WebMessageReceived += (_, args) =>
                 {
-                    args.Handled = true;
-                    if (!string.IsNullOrWhiteSpace(args.Uri))
+                    try
                     {
-                        pane.CoreWebView2.Navigate(args.Uri);
+                        string? msg = args.TryGetWebMessageAsString();
+                        if (!string.IsNullOrEmpty(msg))
+                        {
+                            WriteDebugLog(msg);
+                        }
+                    }
+                    catch
+                    {
                     }
                 };
-
-                SyncAudio();
             }
 
-            if (pane.CoreWebView2 != null)
+            // Orden de carga: primero las variables de la plataforma y al final el script compartido, que las lee al arrancar.
+            // En WebView2 (AddScriptToExecuteOnDocumentCreatedAsync), document.head aún es null al inyectarse antes de parsear el HTML;
+            // este puente difiere el appendChild inicial de fill-fullscreen.js hasta que exista <head>, sin modificar el script compartido.
+            string headBridge = """
+                (function () {
+                  var d = Object.getOwnPropertyDescriptor(Document.prototype, 'head');
+                  if (d && d.get && !d.get.call(document)) {
+                    Object.defineProperty(document, 'head', {
+                      configurable: true,
+                      get: function () {
+                        var h = d.get.call(this);
+                        if (h) { delete document.head; return h; }
+                        return {
+                          appendChild: function (el) {
+                            delete document.head;
+                            var attach = function () {
+                              var t = d.get.call(document) || document.documentElement;
+                              if (t) { t.appendChild(el); return true; }
+                              return false;
+                            };
+                            if (!attach()) {
+                              addEventListener('readystatechange', function () { attach(); }, { once: true });
+                              addEventListener('DOMContentLoaded', function () { attach(); }, { once: true });
+                            }
+                            return el;
+                          }
+                        };
+                      }
+                    });
+                  }
+                })();
+                """;
+
+            string platformBridge = _debugMode
+                ? headBridge + "\nwindow.__daznerDebug = true; window.__daznerLog = function (m) { try { window.chrome.webview.postMessage(String(m)); } catch (e) {} };"
+                : headBridge + "\nwindow.__daznerDebug = false;";
+
+            await pane.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(platformBridge);
+
+            if (_debugMode)
             {
-                AttachCoreEvents();
+                await pane.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync($"if (window === window.top) {{ window.__pane = {index}; }}");
             }
-            else
+
+            if (!string.IsNullOrEmpty(_fillScript))
             {
-                pane.CoreWebView2InitializationCompleted += (_, args) =>
+                await pane.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(_fillScript);
+            }
+
+            if (pane.CoreWebView2 == null || (index == 1 && pane != _secondWebView))
+            {
+                return;
+            }
+
+            pane.CoreWebView2.NewWindowRequested += (_, args) =>
+            {
+                args.Handled = true;
+                if (!string.IsNullOrWhiteSpace(args.Uri))
                 {
-                    if (args.IsSuccess)
-                    {
-                        AttachCoreEvents();
-                    }
-                };
-            }
+                    pane.CoreWebView2.Navigate(args.Uri);
+                }
+            };
+
+            SyncAudio();
+            pane.CoreWebView2.Navigate(initialUrl);
         }
 
         public void FocusPane(int index)
@@ -650,13 +787,12 @@ namespace DAZNer
             {
                 var pane1 = new WebView2
                 {
-                    DefaultBackgroundColor = System.Drawing.Color.Black,
-                    Source = new Uri(HomeUrl)
+                    DefaultBackgroundColor = System.Drawing.Color.Black
                 };
-                ConfigureWebView(pane1, 1);
                 Grid.SetColumn(pane1, 2);
                 panesGrid.Children.Add(pane1);
                 _secondWebView = pane1;
+                _ = InitializePaneAsync(pane1, 1, HomeUrl);
 
                 colGap.Width = new GridLength(8);
                 colPane1.Width = new GridLength(1, GridUnitType.Star);
@@ -884,6 +1020,16 @@ namespace DAZNer
                     OpenUrlDialog();
                     e.Handled = true;
                 }
+                else if (e.Key == Key.R)
+                {
+                    GetPane(_focusedPane)?.CoreWebView2?.Reload();
+                    e.Handled = true;
+                }
+                else if (e.Key == Key.H)
+                {
+                    GetPane(_focusedPane)?.CoreWebView2?.Navigate(HomeUrl);
+                    e.Handled = true;
+                }
                 else if (e.Key == Key.F)
                 {
                     FillAndCenter();
@@ -893,6 +1039,19 @@ namespace DAZNer
                 {
                     ToggleAlwaysOnTop();
                     e.Handled = true;
+                }
+            }
+            else if (_debugMode && Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift) && e.Key == Key.I)
+            {
+                GetPane(_focusedPane)?.CoreWebView2?.OpenDevToolsWindow();
+                e.Handled = true;
+            }
+            else if (Keyboard.Modifiers == ModifierKeys.None && e.Key == Key.Escape)
+            {
+                var activePane = GetPane(_focusedPane);
+                if (activePane?.CoreWebView2 != null)
+                {
+                    _ = activePane.CoreWebView2.ExecuteScriptAsync("if (document.fullscreenElement) { document.exitFullscreen(); }");
                 }
             }
         }
