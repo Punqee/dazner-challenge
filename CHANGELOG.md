@@ -3,6 +3,29 @@
 **Nota:** Todas las fechas están en zona horaria CST de Ciudad de México (UTC-6).
 
 <!-- markdownlint-disable MD013 MD024 MD022 MD032 -->
+## [2026-11-13] - Pantalla completa emulada y sesión persistente en Windows
+
+- fix: mantiene aplicada la hoja de estilo de `fill-fullscreen.js` en `windows/MainWindow.xaml.cs` escuchando `readystatechange` en `document` y reinsertando el nodo `<style>` con un `MutationObserver` si la SPA de DAZN lo retira de `<head>`, y pospone los atajos `Ctrl+R` y `Ctrl+H` a la tarea 5.1
+- docs: actualiza `openspec/changes/add-windows-port/design.md` y `tasks.md` tras la quinta revisión: documenta la reinserción del `<style>` de `fill-fullscreen.js` con `MutationObserver`, agrega la comprobación del estilo calculado en la tarea 4.2, marca la tarea 2.2 verificada en dos monitores y reserva `Ctrl+R` y `Ctrl+H` para la tarea 5.1
+- feat: carga `shared/fill-fullscreen.js` antes de la página, enlaza `window.__daznerLog` a `debug.log` en modo `--debug` y configura la sesión persistente en `%LOCALAPPDATA%\DAZNer` en `windows/`
+- docs: documenta en `openspec/changes/add-windows-port/design.md` el puente de inyección de `fill-fullscreen.js`, la carpeta de sesión propia y los resultados de verificación del grupo 4
+- refactor: redimensiona la ventana antes de actualizar las columnas del `Grid` al cambiar de paneles en `windows/MainWindow.xaml.cs` (como en macOS) y acota las teclas de siguiente panel a las cuatro documentadas (`Oem3`, `Oem5`, `Oem1` y `Tab`)
+- docs: documenta en `openspec/changes/add-windows-port/design.md` el orden de redimensionado de la ventana antes del `Grid` al abrir o cerrar el segundo panel y la distribución de teclado que motiva cada tecla aceptada para cambiar de panel
+- feat: agrega silencio automático por foco (`CoreWebView2.IsMuted`), cambio de panel con clic o atajo de teclado, diálogo para abrir una dirección web (`Ctrl+L`) y apertura de enlaces de ventana nueva en el mismo panel en `windows/MainWindow.xaml.cs`
+- feat: agrega el diseño de uno y dos paneles (`Ctrl+1` y `Ctrl+2`) con separación de 8 px, creación a demanda y liberación del segundo `WebView2`, y redimensionado de ventana 16:9 / 32:9 en `windows/MainWindow.xaml` y `windows/MainWindow.xaml.cs`
+- perf: guarda en caché el rectángulo y la escala de DPI de la ventana al moverla o redimensionarla para evitar consultas Win32 en cada movimiento del ratón dentro del *hook* de `windows/MainWindow.xaml.cs`
+- docs: actualiza `openspec/changes/add-windows-port/design.md` con la caché del *hook* de ratón y las decisiones de diseño del grupo 3 (paneles, audio por foco, diálogo `Ctrl+L` y enlaces en el mismo panel)
+- feat: agrega las acciones «Rellenar y centrar» (`Ctrl+F`) en el área útil del monitor actual y «Siempre encima» (`Ctrl+T`) en `windows/MainWindow.xaml` y `windows/MainWindow.xaml.cs`
+- feat: impone la proporción fija de 16:9 al redimensionar la ventana desde cualquier borde o esquina mediante `WM_SIZING` en `windows/MainWindow.xaml.cs`
+- refactor: elimina el `Border` de arrastre y los manejadores de ratón sin efecto en `windows/MainWindow.xaml` y `windows/MainWindow.xaml.cs`
+- docs: actualiza `openspec/changes/add-windows-port/design.md` y `tasks.md` tras la segunda revisión (proyecto `DAZNer`, limpieza del *hook*, riesgo de `WH_MOUSE_LL` y tareas `2.2` y `2.3`)
+- feat: implementa la ventana sin bordes con `WindowChrome`, franja superior de arrastre de 14 px y movimiento con `Alt` + arrastrar en `windows/`
+- refactor: renombra el proyecto y la solución a `DAZNer` (`DAZNer.csproj`, `DAZNer.sln`), elimina clases de plantilla sin uso y ajusta `.gitignore`
+- docs: documenta en `README.md` los requisitos y comandos para compilar y ejecutar la versión de Windows
+- docs: actualiza las especificaciones, propuesta, diseño y lista de tareas del cambio `add-windows-port` tras la primera revisión
+- docs: registra los resultados de la prueba de reproducción y la bitácora de problemas en `openspec/changes/add-windows-port/design.md`
+- feat: crea el proyecto mínimo de WPF con WebView2 en `windows/` para la prueba de reproducción de DAZN
+
 ## [2026-11-12] - Quinta revisión del reto de Punqee
 
 - docs: actualiza `score/punqee.md` tras la quinta revisión: la calificación actual baja de 8.8 a 8.3 / 10 (calidad de los PR y de los *commits* de 9 a 7 porque `check-pr.sh` falla al cambiar `CHANGELOG.md` en dos *commits*, y calidad técnica de 8 a 7 porque la pantalla completa del *multiview* no funciona), el avance verificado pasa a 13 de las 18 tareas (se verifican la 2.2, la 4.1 y la 4.3; la 4.2 no pasa con *multiview*), la lista de la cuarta revisión queda como atendida y se agrega la sección «Quinta revisión (12 de noviembre de 2026)» con lo que se le pide ahora: corregir el CHANGELOG, lograr que la hoja de estilo de `fill-fullscreen.js` se aplique, marcar la tarea 2.2 y pasar `Ctrl+R` y `Ctrl+H` a la tarea 5.1

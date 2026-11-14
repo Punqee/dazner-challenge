@@ -367,8 +367,9 @@ namespace DAZNer
             }
 
             // Orden de carga: primero las variables de la plataforma y al final el script compartido, que las lee al arrancar.
-            // En WebView2 (AddScriptToExecuteOnDocumentCreatedAsync), document.head aún es null al inyectarse antes de parsear el HTML;
-            // este puente difiere el appendChild inicial de fill-fullscreen.js hasta que exista <head>, sin modificar el script compartido.
+            // En WebView2 (AddScriptToExecuteOnDocumentCreatedAsync), document.head aún es null al inyectarse antes de parsear el HTML,
+            // y al montar las rutas de su SPA DAZN puede retirar nodos <style> externos de <head>; este puente inserta el <style>
+            // de fill-fullscreen.js en cuanto existe <head> y lo reinserta con un MutationObserver si es retirado, sin tocar el script compartido.
             string headBridge = """
                 (function () {
                   var d = Object.getOwnPropertyDescriptor(Document.prototype, 'head');
@@ -383,13 +384,16 @@ namespace DAZNer
                             delete document.head;
                             var attach = function () {
                               var t = d.get.call(document) || document.documentElement;
-                              if (t) { t.appendChild(el); return true; }
-                              return false;
+                              if (t && !t.contains(el)) { t.appendChild(el); return true; }
+                              return !!t;
                             };
                             if (!attach()) {
-                              addEventListener('readystatechange', function () { attach(); }, { once: true });
-                              addEventListener('DOMContentLoaded', function () { attach(); }, { once: true });
+                              document.addEventListener('readystatechange', attach);
+                              addEventListener('DOMContentLoaded', attach, { once: true });
                             }
+                            new MutationObserver(function () {
+                              if (!document.contains(el)) { attach(); }
+                            }).observe(document, { childList: true, subtree: true });
                             return el;
                           }
                         };
@@ -1018,16 +1022,6 @@ namespace DAZNer
                 else if (e.Key == Key.L)
                 {
                     OpenUrlDialog();
-                    e.Handled = true;
-                }
-                else if (e.Key == Key.R)
-                {
-                    GetPane(_focusedPane)?.CoreWebView2?.Reload();
-                    e.Handled = true;
-                }
-                else if (e.Key == Key.H)
-                {
-                    GetPane(_focusedPane)?.CoreWebView2?.Navigate(HomeUrl);
                     e.Handled = true;
                 }
                 else if (e.Key == Key.F)
