@@ -10,7 +10,7 @@
 ## 2. Ventana
 
 - [x] 2.1 Ventana sin bordes con franja de arrastre de 14 px y Alt + arrastrar, retirando elementos y manejadores de ratón de WPF sin ejecutar; verificar los escenarios de «Mover la ventana» de `window-chrome` (solo se puede verificar en Windows).
-- [ ] 2.2 Proporción fija 16:9 y 32:9 al arrastrar los bordes con `WM_SIZING`; verificar los escenarios de «Proporción fija» en un monitor y en dos (solo se puede verificar en Windows).
+- [x] 2.2 Proporción fija 16:9 y 32:9 al arrastrar los bordes con `WM_SIZING`; verificar los escenarios de «Proporción fija» en un monitor y en dos (solo se puede verificar en Windows).
 - [x] 2.3 Rellenar y centrar sobre el área de trabajo del monitor, y siempre encima; verificar los escenarios de ambos requisitos (solo se puede verificar en Windows).
 
 ## 3. Paneles
@@ -23,7 +23,7 @@
 ## 4. Pantalla completa y sesión
 
 - [x] 4.1 Cargar `shared/fill-fullscreen.js` con las variables previas y enlazar `window.__daznerLog` al mensaje web; verificar con `--debug` que `debug.log` recibe eventos (solo se puede verificar en Windows).
-- [ ] 4.2 Probar la pantalla completa del video principal y de uno secundario, la general con cuatro videos y Esc; verificar los escenarios de `fullscreen-emulation` (solo se puede verificar en Windows).
+- [ ] 4.2 Probar la pantalla completa del video principal y de uno secundario, la general con cuatro videos y Esc; verificar con `--debug` en la consola del inspector que `[...document.querySelectorAll('style')].some(s => s.textContent.includes('.__fs'))` devuelve `true` y que un elemento con la clase `__fs` tiene `position: fixed` en su estilo calculado, además de los escenarios de `fullscreen-emulation` (solo se puede verificar en Windows).
 - [x] 4.3 Sesión persistente en la carpeta de datos propia, compartida entre paneles e instancias; verificar los escenarios de `session` abriendo tres instancias (solo se puede verificar en Windows).
 
 ## 5. Atajos, paquete y documentación
