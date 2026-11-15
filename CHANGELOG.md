@@ -3,6 +3,11 @@
 **Nota:** Todas las fechas están en zona horaria CST de Ciudad de México (UTC-6).
 
 <!-- markdownlint-disable MD013 MD024 MD022 MD032 -->
+## [2026-11-15] - Sexta revisión del reto de Punqee
+
+- docs: actualiza `score/punqee.md` tras la sexta revisión: la calificación actual sube de 8.3 a 8.8 / 10 (calidad de los PR y de los *commits* de 7 a 9 porque `check-pr.sh` ya pasa, y calidad técnica de 7 a 8 porque la pantalla completa del *multiview* funciona), el avance verificado se mantiene en 13 de las 18 tareas (se verifica la 4.2 y se reabre la 3.2 porque el panel 1 pasa por un tamaño intermedio al volver a un panel y pierde el *multiview*), la lista de la quinta revisión queda como atendida y se agrega la sección «Sexta revisión (15 de noviembre de 2026)» con lo que se le pide ahora: evitar ese tamaño intermedio, marcar la tarea 4.2, limitar el `MutationObserver` y seguir con el grupo 5
+- docs: agrega `review/2026-11-15_punqee_review.md`, la sexta revisión de la entrega de @Punqee al reto de contribución (PR #5, rama `challenge/punqee/add-windows-port`): las puertas automáticas, la compilación, lo que atendió de la quinta revisión, la prueba por RDP de la pantalla completa del *multiview* y del cambio de paneles, y el diagnóstico del tamaño intermedio del panel 1 al volver a un panel
+
 ## [2026-11-12] - Quinta revisión del reto de Punqee
 
 - docs: actualiza `score/punqee.md` tras la quinta revisión: la calificación actual baja de 8.8 a 8.3 / 10 (calidad de los PR y de los *commits* de 9 a 7 porque `check-pr.sh` falla al cambiar `CHANGELOG.md` en dos *commits*, y calidad técnica de 8 a 7 porque la pantalla completa del *multiview* no funciona), el avance verificado pasa a 13 de las 18 tareas (se verifican la 2.2, la 4.1 y la 4.3; la 4.2 no pasa con *multiview*), la lista de la cuarta revisión queda como atendida y se agrega la sección «Quinta revisión (12 de noviembre de 2026)» con lo que se le pide ahora: corregir el CHANGELOG, lograr que la hoja de estilo de `fill-fullscreen.js` se aplique, marcar la tarea 2.2 y pasar `Ctrl+R` y `Ctrl+H` a la tarea 5.1

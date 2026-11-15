@@ -1,6 +1,6 @@
 # Evaluación del reto: Punqee
 
-*Última modificación: 12 de noviembre de 2026, 00:24 (CST)*
+*Última modificación: 15 de noviembre de 2026, 13:20 (CST)*
 
 Revisión de la entrega de Míriam ([@Punqee](https://github.com/Punqee)) al [reto de contribución](../CHALLENGE.md), hecha por el mantenedor con Claude Code (Opus 5.5) en una máquina con Windows. Registra lo que se ejecutó, lo que se observó y una propuesta de calificación con los criterios del reto.
 
@@ -121,14 +121,14 @@ Es la calificación vigente. Se actualiza cada vez que la participante entrega y
 
 | Criterio | Peso | Calificación | Motivo |
 |---|---|---|---|
-| Disciplina SDD | 30 % | 9 | Atendió cada revisión por la especificación antes que el código y dejó sin marcar lo que no pudo probar (la 2.2 en dos monitores y la 4.2 con *multiview*). Agregó `Ctrl+R` y `Ctrl+H`, de la tarea 5.1, sin registrarlos en `tasks.md` ni en el diseño. |
-| Compila en otra máquina sin intervención | 25 % | 8 | Compiló en un clon nuevo siguiendo solo el README, con 0 advertencias y 0 errores, y volvió a compilar igual en la quinta entrega, con el script compartido copiado junto al ejecutable. No se volvió a probar la instalación del SDK ni la compilación en Visual Studio. |
-| Calidad de los PR y de los *commits* | 20 % | 7 | `check-pr.sh` falla: `CHANGELOG.md` cambia en dos *commits*, y un PR así se rechaza sin revisar el código. Los *commits* siguen siendo atómicos y el PR detalla qué probó y qué no. Sube en cuanto pase la comprobación. |
-| Honestidad | 15 % | 10 | Declara su cuenta de acceso limitado, su único monitor y lo que no probó, incluido el *multiview* de la tarea 4.2. |
-| Calidad técnica | 10 % | 7 | La ventana, los paneles, la sesión compartida entre instancias y la pantalla completa del video principal funcionan, y el diseño deja apagados el guardado de contraseñas y el inspector fuera de `--debug`. La pantalla completa del *multiview*, el caso por el que existe el script compartido, no funciona porque su hoja de estilo no se aplica. |
-| **Total ponderado** | | **8.3 / 10** | |
+| Disciplina SDD | 30 % | 9 | Atendió cada revisión por la especificación antes que el código, documentó en la bitácora las causas de cada falla y dejó sin marcar lo que no pudo probar, como la 4.2 con *multiview*. |
+| Compila en otra máquina sin intervención | 25 % | 8 | Compiló en un clon nuevo siguiendo solo el README, con 0 advertencias y 0 errores, y volvió a compilar igual en la sexta entrega, con el script compartido copiado junto al ejecutable. No se volvió a probar la instalación del SDK ni la compilación en Visual Studio. |
+| Calidad de los PR y de los *commits* | 20 % | 9 | Pasa `check-pr.sh` sin fallos, los *commits* son atómicos, el CHANGELOG cambia solo en el último *commit* y el PR detalla qué probó y qué no. |
+| Honestidad | 15 % | 10 | Declara su cuenta de acceso limitado, su único monitor y lo que no probó, y atribuye al mantenedor lo que verificó él. |
+| Calidad técnica | 10 % | 8 | La ventana, los paneles, la sesión compartida entre instancias y la pantalla completa, incluido el *multiview*, funcionan, y encontró la causa de la falla de la hoja de estilo sin modificar el script compartido. Al volver a un panel, el panel 1 pasa por un tamaño intermedio y DAZN abandona el *multiview*; ese orden se lo pidió la cuarta revisión, así que no se le descuenta. |
+| **Total ponderado** | | **8.8 / 10** | |
 
-Avance verificado: 13 de las 18 tareas del cambio `add-windows-port` (1.1 a 1.4, 2.1 a 2.3, 3.1 a 3.4, 4.1 y 4.3). La 4.2 no pasa con *multiview*. Quedan la 4.2 y de la 5.1 a la 5.4.
+Avance verificado: 13 de las 18 tareas del cambio `add-windows-port` (1.1 a 1.4, 2.1 a 2.3, 3.1, 3.3, 3.4 y 4.1 a 4.3). La 3.2 se reabre porque el *multiview* del panel 1 no sobrevive al volver de dos paneles a uno. Quedan la 3.2 y de la 5.1 a la 5.4.
 
 ## Veredicto y siguientes pasos
 
@@ -226,12 +226,31 @@ El mantenedor revisó la rama en su último *commit*, `feat(windows): add shared
   - **Falla:** la pantalla completa del *multiview*. Con un video, ninguno se ve. Con la general, los videos llenan la ventana, pero se ve el resto de la página. `debug.log` indica que la hoja de estilo de `fill-fullscreen.js` no se aplica: el elemento con `__fs` conserva `position: relative`.
 - **Tareas:** quedan verificadas la 2.2 (ya puedes marcarla), la 4.1 y la 4.3. La 4.2 no pasa.
 
-**Qué se te pide ahora:**
+**Qué se pidió en la quinta revisión** (ya atendido en la sexta entrega):
 
 1. Corrige el CHANGELOG para que cambie solo en el último *commit*, reescribiendo tu rama, y comprueba que `check-pr.sh` pase sin fallos antes de subir.
 2. Haz que la hoja de estilo de `fill-fullscreen.js` se aplique, sin modificar el script compartido; el sospechoso es el puente de `document.head`. Primero en `design.md` y `tasks.md`, después en el código. No necesitas *multiview* para comprobarlo: con `--debug`, evalúa en la consola del inspector `[...document.querySelectorAll('style')].some(s => s.textContent.includes('.__fs'))` (debe dar `true`) y comprueba que un elemento con la clase `__fs` tenga `position: fixed` en su estilo calculado. Agrega esa comprobación a la verificación de la tarea 4.2; el mantenedor vuelve a probar el *multiview* con su cuenta.
 3. Marca la tarea 2.2 y anota en el PR que la verificó el mantenedor en dos monitores.
 4. Pasa `Ctrl+R` y `Ctrl+H` a la tarea 5.1, o documéntalos en `design.md` y en el *commit* en el que entran.
+
+## Sexta revisión (15 de noviembre de 2026)
+
+El mantenedor revisó la rama en su último *commit*, `fix(windows): keep fullscreen stylesheet attached and defer Ctrl+R and Ctrl+H to task 5.1`, ya sobre el `main` actual, y la probó por RDP con su cuenta. El detalle completo está en [review/2026-11-15_punqee_review.md](../review/2026-11-15_punqee_review.md). Resumen:
+
+- **Puertas:** `check-pr.sh` pasa sin fallos (OpenSpec sigue sin validarse por falta de Node en la máquina del mantenedor).
+- **Compilación:** `dotnet build windows\DAZNer.sln`, con 0 advertencias y 0 errores.
+- **Atendido de la quinta revisión:** todo. Encontraste las dos causas de la falla de la hoja de estilo (`readystatechange` en `window` y DAZN retirando el `<style>`) y las documentaste en la bitácora antes del código.
+- **Prueba del mantenedor:**
+  - **Funciona:** la pantalla completa de cada video del *multiview* y la general con cuatro videos, sin nada de la página y con `Esc`; y `Ctrl+2` conserva los cuatro videos del panel 1.
+  - **Falla:** al volver a un panel con `Ctrl+1`, el panel 1 se queda con un solo video. `debug.log` muestra que el panel 1 pasa un instante por 811 px, por debajo del ancho al que DAZN ofrece el *multiview*, antes de llegar a su tamaño final. El orden de macOS que te pidió la cuarta revisión no basta en WPF, así que no es una falla tuya.
+- **Tareas:** la 4.2 queda verificada; ya puedes marcarla. La 3.2 se reabre por el tamaño intermedio.
+
+**Qué se te pide ahora:**
+
+1. Evita el tamaño intermedio del panel 1 al cambiar de paneles, en especial al volver a uno, primero en `design.md` y `tasks.md` y después en el código. Una forma: fija la columna del panel 1 a su ancho en píxeles, cambia la ventana, agrega o quita la otra columna y al final devuelve la columna del panel 1 a `*`. No necesitas *multiview* para comprobarlo: con `--debug`, al cambiar de paneles `debug.log` debe registrar un solo `page:resize` del panel 1, sin uno a la mitad o al doble de su ancho. Agrega esa comprobación a la tarea 3.2; el mantenedor vuelve a probar el *multiview* con su cuenta.
+2. Marca la tarea 4.2 y anota en el PR que la verificó el mantenedor con *multiview*.
+3. Opcional: limita el `MutationObserver` a `<head>` y `documentElement`, en lugar de todo el documento.
+4. Sigue con el grupo 5 (atajos, paquete y documentación), igual que hasta ahora.
 
 ## Cómo traer los cambios de `main` a tu rama
 
