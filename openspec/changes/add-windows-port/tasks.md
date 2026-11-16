@@ -16,14 +16,14 @@
 ## 3. Paneles
 
 - [x] 3.1 Modo de uno y dos paneles con hueco de 8 px dentro del ancho de la ventana; verificar las medidas del escenario de «Hueco entre paneles» (solo se puede verificar en Windows).
-- [x] 3.2 Crear el segundo panel a demanda y liberarlo al volver a uno, sin refrescar el primero; verificar que el primer panel sigue reproduciendo y que el proceso del segundo desaparece del Administrador de tareas (solo se puede verificar en Windows).
+- [ ] 3.2 Crear el segundo panel a demanda y liberarlo al volver a uno, sin refrescar el primero ni pasar por un tamaño intermedio; verificar que el primer panel sigue reproduciendo, que el proceso del segundo desaparece del Administrador de tareas, que con `--debug` al cambiar de paneles `debug.log` registra un solo `page:resize` del panel 1 (sin uno a la mitad o al doble de su ancho) y que el *multiview* con cuatro videos sobrevive a `Ctrl+2` y a `Ctrl+1` (solo se puede verificar en Windows).
 - [x] 3.3 Audio por foco con `IsMuted`, cambio de panel y abrir dirección; verificar los escenarios de «Audio por foco» y de abrir dirección (solo se puede verificar en Windows).
 - [x] 3.4 Abrir en el mismo panel los enlaces de ventana nueva; verificar el escenario de `playback` (solo se puede verificar en Windows).
 
 ## 4. Pantalla completa y sesión
 
 - [x] 4.1 Cargar `shared/fill-fullscreen.js` con las variables previas y enlazar `window.__daznerLog` al mensaje web; verificar con `--debug` que `debug.log` recibe eventos (solo se puede verificar en Windows).
-- [ ] 4.2 Probar la pantalla completa del video principal y de uno secundario, la general con cuatro videos y Esc; verificar con `--debug` en la consola del inspector que `[...document.querySelectorAll('style')].some(s => s.textContent.includes('.__fs'))` devuelve `true` y que un elemento con la clase `__fs` tiene `position: fixed` en su estilo calculado, además de los escenarios de `fullscreen-emulation` (solo se puede verificar en Windows).
+- [x] 4.2 Probar la pantalla completa del video principal y de uno secundario, la general con cuatro videos y Esc; verificar con `--debug` en la consola del inspector que `[...document.querySelectorAll('style')].some(s => s.textContent.includes('.__fs'))` devuelve `true` y que un elemento con la clase `__fs` tiene `position: fixed` en su estilo calculado, además de los escenarios de `fullscreen-emulation` (solo se puede verificar en Windows).
 - [x] 4.3 Sesión persistente en la carpeta de datos propia, compartida entre paneles e instancias; verificar los escenarios de `session` abriendo tres instancias (solo se puede verificar en Windows).
 
 ## 5. Atajos, paquete y documentación
