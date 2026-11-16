@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="app.ico" />
     <None Include="..\shared\fill-fullscreen.js" Link="fill-fullscreen.js" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
