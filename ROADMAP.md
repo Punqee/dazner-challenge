@@ -1,8 +1,8 @@
 # Hoja de ruta
 
-*Última modificación: 7 de noviembre de 2026, 15:30 (CST)*
+*Última modificación: 15 de noviembre de 2026, 22:45 (CST)*
 
-DAZNer hoy existe solo para macOS. Esta hoja de ruta describe cómo reorganizar el repositorio y llevar el mismo visor a Windows y a Linux (GTK y Qt), sin perder lo que lo hace útil: ventana sin bordes, proporción fija, dos paneles y pantalla completa dentro de la ventana.
+DAZNer hoy existe para macOS y Windows. Esta hoja de ruta describe cómo reorganizar el repositorio y llevar el mismo visor a Windows y a Linux (GTK y Qt), sin perder lo que lo hace útil: ventana sin bordes, proporción fija, dos paneles y pantalla completa dentro de la ventana.
 
 El detalle de cada fase (requisitos, diseño y tareas) vive en `openspec/changes/`, y el comportamiento que debe cumplir cada plataforma, en `openspec/specs/`. Esta hoja de ruta es la visión general; las instrucciones para un agente que construya una versión están en `AGENTS.md`.
 
@@ -20,7 +20,7 @@ El detalle de cada fase (requisitos, diseño y tareas) vive en `openspec/changes
 | Plataforma | Estado |
 |---|---|
 | macOS (WebKit, `WKWebView`) | Publicada, versión inicial |
-| Windows | Sin empezar |
+| Windows (WPF, WebView2) | Disponible (`windows/`) |
 | Linux GTK | Sin empezar |
 | Linux Qt | Sin empezar |
 
@@ -170,18 +170,18 @@ Leyenda: **Sí** = hecho, **Pendiente** = planeado, **Probable** = el motor es e
 
 | Función | macOS | Windows | Linux GTK | Linux Qt |
 |---|---|---|---|---|
-| Reproducción con DRM | Sí | Probable | Dudoso | Probable |
-| Ventana sin bordes y arrastre | Sí | Pendiente | Pendiente | Pendiente |
-| Proporción fija 16:9 / 32:9 | Sí | Pendiente | Limitada | Limitada |
-| Rellenar y centrar | Sí | Pendiente | Limitada | Limitada |
-| Dos paneles con hueco de 8 px | Sí | Pendiente | Pendiente | Pendiente |
-| Segundo panel creado y liberado a demanda | Sí | Pendiente | Pendiente | Pendiente |
-| Pantalla completa dentro de la ventana o el panel | Sí | Pendiente | Pendiente | Pendiente |
-| Audio por panel | Sí | Pendiente | Pendiente | Pendiente |
-| Sesión persistente | Sí | Pendiente | Pendiente | Pendiente |
-| Siempre encima | Sí | Pendiente | Limitada | Limitada |
-| Modo de diagnóstico `--debug` | Sí | Pendiente | Pendiente | Pendiente |
-| Varias instancias | Sí | Pendiente | Pendiente | Pendiente |
+| Reproducción con DRM | Sí | Sí | Dudoso | Probable |
+| Ventana sin bordes y arrastre | Sí | Sí | Pendiente | Pendiente |
+| Proporción fija 16:9 / 32:9 | Sí | Sí | Limitada | Limitada |
+| Rellenar y centrar | Sí | Sí | Limitada | Limitada |
+| Dos paneles con hueco de 8 px | Sí | Sí | Pendiente | Pendiente |
+| Segundo panel creado y liberado a demanda | Sí | Sí | Pendiente | Pendiente |
+| Pantalla completa dentro de la ventana o el panel | Sí | Sí | Pendiente | Pendiente |
+| Audio por panel | Sí | Sí | Pendiente | Pendiente |
+| Sesión persistente | Sí | Sí | Pendiente | Pendiente |
+| Siempre encima | Sí | Sí | Limitada | Limitada |
+| Modo de diagnóstico `--debug` | Sí | Sí | Pendiente | Pendiente |
+| Varias instancias | Sí | Sí | Pendiente | Pendiente |
 
 ## Riesgos y decisiones abiertas
 

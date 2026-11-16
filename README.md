@@ -1,34 +1,37 @@
 ---
 title: "DAZNer"
-description: "Visor nativo y mínimo de DAZN (NFL Game Pass) para macOS con WebKit: ventana sin bordes, dos paneles y pantalla completa dentro de la ventana."
+description: "Visor nativo y mínimo de DAZN (NFL Game Pass) para macOS y Windows: ventana sin bordes, dos paneles y pantalla completa dentro de la ventana."
 ---
 
 # DAZNer
 
-*Última modificación: 7 de noviembre de 2026, 15:30 (CST)*
+*Última modificación: 15 de noviembre de 2026, 22:45 (CST)*
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 [![Platform: macOS](https://img.shields.io/badge/platform-macOS-lightgrey.svg)](https://www.apple.com/macos/)
+[![Platform: Windows](https://img.shields.io/badge/platform-Windows-0078D6.svg)](https://www.microsoft.com/windows/)
 [![Swift](https://img.shields.io/badge/Swift-F05138?logo=swift&logoColor=white)](https://www.swift.org/)
 [![WebKit](https://img.shields.io/badge/WebKit-WKWebView-informational.svg)](https://webkit.org/)
+[![C#](https://img.shields.io/badge/C%23-.NET%2010-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![WebView2](https://img.shields.io/badge/WebView2-Chromium-0078D7.svg)](https://learn.microsoft.com/microsoft-edge/webview2/)
 
-Visor nativo y mínimo de DAZN (NFL Game Pass) para macOS, hecho con WebKit. Muestra los partidos en una ventana sin bordes, ideal para pantallas grandes y para usarla junto al *multiview* de DAZN. Proyecto personal de Rodrigo Álvarez (@incognia).
+Visor nativo y mínimo de DAZN (NFL Game Pass) para macOS (WebKit) y Windows (WPF con WebView2). Muestra los partidos en una ventana sin bordes, ideal para pantallas grandes y para usarla junto al *multiview* de DAZN. Proyecto personal de Rodrigo Álvarez (@incognia).
 
 ## Estado
 
 | Plataforma | Estado | Motor web |
 |---|---|---|
 | macOS | Disponible | WebKit (`WKWebView`) |
-| Windows | Planeada | WebView2 (Chromium) |
+| Windows | Disponible | WebView2 (Chromium) |
 | Linux (Qt) | Planeada | Qt WebEngine (Chromium) |
 | Linux (GTK) | Experimental: depende del DRM | WebKitGTK |
 
 En cada plataforma nueva se comprueba primero que DAZN reproduce en su motor web, y solo después se construye el resto. El orden de trabajo está en [ROADMAP.md](ROADMAP.md) y los pendientes, por máquina, en [TODO.md](TODO.md).
 
-## Por qué WebKit
+## Por qué WebKit y WebView2
 
-- DAZN usa DRM. WebKit reproduce con FairPlay igual que Safari, sin configuración adicional.
-- Es un solo archivo de Swift que se compila con `swiftc`, sin Xcode y sin dependencias.
+- DAZN usa DRM. En macOS, WebKit reproduce con FairPlay igual que Safari; en Windows, WebView2 reproduce con Widevine igual que Edge y Chrome, sin configuración adicional.
+- Cada versión usa el lenguaje y motor web nativos de su sistema: Swift con `swiftc` en macOS y C# (.NET) con WPF y WebView2 en Windows.
 
 ## Compilar (macOS)
 
@@ -66,23 +69,32 @@ swiftc shared/scripts/make-icon.swift -o /tmp/make-icon
 
 ### Compilación
 
-Desde PowerShell en la raíz del repositorio:
+Desde PowerShell (Windows PowerShell 5.1 o PowerShell 7) en la raíz del repositorio (con `-ExecutionPolicy Bypass` por si la política predeterminada de Windows bloquea la ejecución de *scripts* locales):
 
 ```powershell
-dotnet build windows\DAZNer.sln
+powershell -ExecutionPolicy Bypass -File .\windows\build.ps1
 ```
 
-O abriendo la solución `windows\DAZNer.sln` en Visual Studio. El ejecutable se genera en:
+O con `--open` para abrir la aplicación al terminar (en PowerShell 7 puedes cambiar `powershell` por `pwsh`, o ejecutar directamente `.\windows\build.ps1 --open` si tu sesión ya permite correr *scripts*):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\windows\build.ps1 --open
+```
+
+El *script* comprueba `shared\fill-fullscreen.js` (y regenera `windows\app.ico` desde `shared\assets\icon.png` si no existe), compila `windows\DAZNer.sln` en configuración `Release` con `dotnet build -c Release` y copia `shared\fill-fullscreen.js` junto al ejecutable. El resultado queda en:
 
 ```text
-windows\bin\Debug\net10.0-windows\DAZNer.exe
+windows\bin\Release\net10.0-windows\DAZNer.exe
 ```
+
+También puedes abrir la solución `windows\DAZNer.sln` en Visual Studio y compilarla (en `Release` o `Debug`), o ejecutar de forma directa `dotnet build windows\DAZNer.sln`: el proyecto `windows\DAZNer.csproj` integra `windows\app.ico` y copia `shared\fill-fullscreen.js` a la carpeta de salida.
 
 ## Estructura del repositorio
 
 ```text
 DAZNer/
 ├── macos/     código de la versión de macOS y su paquete DAZNer.app
+├── windows/   código de la versión de Windows (C# / WPF con WebView2) y build.ps1
 ├── shared/    ícono, imágenes y scripts comunes, entre ellos el de pantalla completa
 ├── openspec/  especificaciones del comportamiento y cambios en curso
 ├── ROADMAP.md orden de ejecución y plan para Windows y Linux
@@ -91,7 +103,7 @@ DAZNer/
 └── ...        README, CHANGELOG, NOTICE y LICENSE
 ```
 
-Las versiones para Windows y Linux todavía no existen: su plan está en [ROADMAP.md](ROADMAP.md) y sus pendientes en [TODO.md](TODO.md).
+Las versiones para Linux todavía no existen: su plan está en [ROADMAP.md](ROADMAP.md) y sus pendientes en [TODO.md](TODO.md).
 
 ## Desarrollo con OpenSpec
 
@@ -103,30 +115,38 @@ Todo cambio entra por un *pull request* con la plantilla de [.github/PULL_REQUES
 
 ## Uso
 
-- **Mover la ventana:** arrastra desde la franja invisible del borde superior (14 px) o mantén ⌥ Option y arrastra desde cualquier punto. El doble clic en la franja maximiza o restaura.
+- **Mover la ventana:** arrastra desde la franja invisible del borde superior (14 px) o mantén ⌥ Option (en macOS) o `Alt` (en Windows) y arrastra desde cualquier punto. El doble clic en la franja maximiza o restaura.
 - **Redimensionar:** desde los bordes, con proporción fija (16:9 con un panel, 32:9 con dos).
-- **Rellenar y centrar:** ⌘F agranda la ventana al máximo que cabe en la pantalla sin perder la proporción y la centra.
-- **Paneles:** ⌘1 un panel, ⌘2 dos paneles, con un hueco de 8 px entre ellos como en el *multiview* de DAZN. El segundo se crea al elegirlo y se cierra al volver a un panel, para liberar memoria.
-- **Pantalla completa:** el botón de pantalla completa de DAZN llena la ventana o el panel en lugar de pasar a la pantalla completa de macOS. Esc regresa al modo normal.
-- **Atajos:** ⌘L abre una URL en el panel con foco, ⌘R recarga, ⌘H vuelve al inicio de DAZN, ⌘` cambia el panel con audio, ⌘T deja la ventana siempre encima, ⌘W cierra y ⌘Q sale.
-- **Varias instancias:** `open -n macos/DAZNer.app` abre otra ventana independiente. Comparten la misma sesión.
+- **Rellenar y centrar:** ⌘F (macOS) o `Ctrl+F` (Windows) agranda la ventana al máximo que cabe en el área útil del monitor sin perder la proporción y la centra.
+- **Paneles:** ⌘1 / `Ctrl+1` un panel, ⌘2 / `Ctrl+2` dos paneles, con un hueco de 8 px entre ellos como en el *multiview* de DAZN. El segundo se crea al elegirlo y se cierra al volver a un panel, para liberar memoria.
+- **Pantalla completa:** el botón de pantalla completa de DAZN llena la ventana o el panel en lugar de pasar a la pantalla completa del sistema. Esc regresa al modo normal.
+- **Atajos:** ⌘L / `Ctrl+L` abre una URL en el panel con foco, ⌘R / `Ctrl+R` recarga, ⌘H / `Ctrl+H` vuelve al inicio de DAZN, ⌘` / `` Ctrl+` `` (o `Ctrl+Tab` en Windows) cambia el panel con audio, ⌘T / `Ctrl+T` deja la ventana siempre encima, ⌘W / `Ctrl+W` cierra y ⌘Q / `Ctrl+Q` sale.
+- **Varias instancias:** `open -n macos/DAZNer.app` en macOS, o ejecutar otra instancia de `DAZNer.exe` en Windows, abre otra ventana independiente. Comparten la misma sesión.
 
 ## Modo de diagnóstico
+
+En macOS:
 
 ```bash
 open -n macos/DAZNer.app --args --debug
 ```
 
-Escribe `debug.log` junto a la aplicación (en `macos/`) con los eventos de pantalla completa y de cada panel, y habilita el inspector web de Safari. Está desactivado de forma predeterminada.
+En Windows:
+
+```powershell
+.\windows\bin\Release\net10.0-windows\DAZNer.exe --debug
+```
+
+Escribe `debug.log` junto a la aplicación con los eventos de pantalla completa y de cada panel, y habilita el inspector web (Safari en macOS; DevTools de WebView2 con `Ctrl+Shift+I` en Windows). Está desactivado de forma predeterminada.
 
 ## Notas
 
 - DAZNer es un proyecto no oficial y no está afiliado a DAZN ni a la NFL. Consulta `NOTICE.md`.
-- La contraseña no se guarda. Solo se conserva la sesión de DAZN, en `~/Library/WebKit/mx.org.faraday.dazner`. El identificador de la aplicación es `mx.org.faraday.dazner` (el dominio faraday.org.mx al revés).
+- La contraseña no se guarda. Solo se conserva la sesión de DAZN, en `~/Library/WebKit/mx.org.faraday.dazner` en macOS (el identificador de la aplicación es `mx.org.faraday.dazner`, el dominio faraday.org.mx al revés) y en `%LOCALAPPDATA%\DAZNer` en Windows.
 - Cambiar el tamaño de la ventana hace que DAZN rehaga el reproductor y refresque el panel. Conviene dejar la ventana en el tamaño deseado antes de abrir el segundo panel.
 - El límite de reproducción de DAZN depende de la ubicación (red) y no del número de ventanas.
-- La aplicación está firmada solo de forma local. Si macOS la bloquea, ábrela con clic derecho → Abrir.
-- Las opciones de 3 y 4 paneles están comentadas en el código para reutilizarlas después.
+- La aplicación está firmada solo de forma local en macOS (si el sistema la bloquea, ábrela con clic derecho → Abrir) y sin firma comercial en Windows.
+- Las opciones de 3 y 4 paneles están comentadas en el código de macOS para reutilizarlas después.
 
 ## Licencia
 

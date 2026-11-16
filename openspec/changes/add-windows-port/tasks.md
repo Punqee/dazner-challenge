@@ -28,10 +28,10 @@
 
 ## 5. Atajos, paquete y documentación
 
-- [ ] 5.1 Atajos con Ctrl y acciones de edición; verificar los escenarios de `shortcuts` (solo se puede verificar en Windows).
-- [ ] 5.2 Generar el `.ico` desde `shared/assets/icon.png` y añadir `windows/build.ps1`, que compile y copie el script compartido; con mensajes solo en ASCII y guardado con BOM según `.editorconfig`; verificar compilando en un clon nuevo con `build.ps1` en Windows PowerShell 5.1 y en PowerShell 7, y con Visual Studio, siguiendo solo el README y sin caracteres corruptos (solo se puede verificar en Windows).
-- [ ] 5.3 Documentar requisitos y compilación en `README.md` y actualizar el estado en `ROADMAP.md`; verificar con `openspec validate add-windows-port --strict`.
-- [ ] 5.4 Ejecutar la lista de verificación de paridad completa y anotar las excepciones con su motivo; verificar que `platform-windows` queda cumplida o con excepciones documentadas (solo se puede verificar en Windows).
+- [x] 5.1 Atajos con Ctrl y acciones de edición; verificar los escenarios de `shortcuts` (solo se puede verificar en Windows).
+- [x] 5.2 Generar el `.ico` desde `shared/assets/icon.png` y añadir `windows/build.ps1`, que compile y copie el script compartido; con mensajes solo en ASCII y guardado con BOM según `.editorconfig`; verificar compilando en un clon nuevo con `build.ps1` en Windows PowerShell 5.1 y en PowerShell 7, y con Visual Studio, siguiendo solo el README y sin caracteres corruptos (solo se puede verificar en Windows).
+- [x] 5.3 Documentar requisitos y compilación en `README.md` y actualizar el estado en `ROADMAP.md`; verificar con `openspec validate add-windows-port --strict`.
+- [x] 5.4 Ejecutar la lista de verificación de paridad completa y anotar las excepciones con su motivo; verificar que `platform-windows` queda cumplida o con excepciones documentadas (solo se puede verificar en Windows).
 
 ## Workflow follow-up
 
