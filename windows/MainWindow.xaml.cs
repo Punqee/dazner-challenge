@@ -369,7 +369,7 @@ namespace DAZNer
             // Orden de carga: primero las variables de la plataforma y al final el script compartido, que las lee al arrancar.
             // En WebView2 (AddScriptToExecuteOnDocumentCreatedAsync), document.head aún es null al inyectarse antes de parsear el HTML,
             // y al montar las rutas de su SPA DAZN puede retirar nodos <style> externos de <head>; este puente inserta el <style>
-            // de fill-fullscreen.js en cuanto existe <head> y lo reinserta con un MutationObserver si es retirado, sin tocar el script compartido.
+            // de fill-fullscreen.js en cuanto existe <head> y lo reinserta con un MutationObserver sobre <head> y documentElement si es retirado, sin tocar el script compartido.
             string headBridge = """
                 (function () {
                   var d = Object.getOwnPropertyDescriptor(Document.prototype, 'head');
@@ -382,18 +382,23 @@ namespace DAZNer
                         return {
                           appendChild: function (el) {
                             delete document.head;
+                            var mo = new MutationObserver(function () {
+                              var curHead = d.get.call(document);
+                              if (!(curHead || document).contains(el)) { attach(); }
+                            });
                             var attach = function () {
-                              var t = d.get.call(document) || document.documentElement;
-                              if (t && !t.contains(el)) { t.appendChild(el); return true; }
-                              return !!t;
+                              var headEl = d.get.call(document);
+                              var rootEl = document.documentElement;
+                              if (rootEl) { mo.observe(rootEl, { childList: true }); }
+                              if (headEl) { mo.observe(headEl, { childList: true }); }
+                              var t = headEl || rootEl;
+                              if (t && !t.contains(el)) { t.appendChild(el); }
+                              return !!headEl;
                             };
                             if (!attach()) {
                               document.addEventListener('readystatechange', attach);
                               addEventListener('DOMContentLoaded', attach, { once: true });
                             }
-                            new MutationObserver(function () {
-                              if (!document.contains(el)) { attach(); }
-                            }).observe(document, { childList: true, subtree: true });
                             return el;
                           }
                         };
@@ -784,6 +789,12 @@ namespace DAZNer
                 return;
             }
 
+            double lockedPane0Width = colPane0.ActualWidth;
+            if (lockedPane0Width > 0)
+            {
+                colPane0.Width = new GridLength(lockedPane0Width, GridUnitType.Pixel);
+            }
+
             _paneCount = count;
             ResizeWindowForPanes(count);
 
@@ -821,6 +832,8 @@ namespace DAZNer
                     paneToDispose.Dispose();
                 }
             }
+
+            colPane0.Width = new GridLength(1, GridUnitType.Star);
 
             if (_focusedPane >= count)
             {
