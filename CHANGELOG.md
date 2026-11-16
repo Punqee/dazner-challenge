@@ -3,6 +3,11 @@
 **Nota:** Todas las fechas están en zona horaria CST de Ciudad de México (UTC-6).
 
 <!-- markdownlint-disable MD013 MD024 MD022 MD032 -->
+## [2026-11-16] - Séptima revisión del reto de Punqee
+
+- docs: actualiza `score/punqee.md` tras la séptima revisión: la calificación actual sube de 8.8 a 9.2 / 10 (compilación en otra máquina de 8 a 9 porque `windows\build.ps1` compila con 0 advertencias y 0 errores en Windows PowerShell 5.1 y en PowerShell 7, y calidad técnica de 8 a 9 porque el *multiview* sobrevive al cambiar de paneles), el avance verificado pasa a 17 de las 18 tareas (se verifican la 3.2, la 5.1, la 5.2 y la 5.4; la 5.3 espera la validación de OpenSpec del flujo de GitHub Actions), la lista de la sexta revisión queda como atendida y se agrega la sección «Séptima revisión (16 de noviembre de 2026)» con lo que se le pide ahora: marcar la 3.2, corregir en `design.md` la lista de tamaños del ícono y atender un posible error de OpenSpec
+- docs: agrega `review/2026-11-16_punqee_review.md`, la séptima revisión de la entrega de @Punqee al reto de contribución (PR #5, rama `challenge/punqee/add-windows-port`): las puertas automáticas, la compilación con `dotnet build` y con `build.ps1` en dos clones nuevos (Windows PowerShell 5.1 y PowerShell 7), lo que atendió de la sexta revisión, la prueba por RDP del *multiview* al cambiar de paneles y de los atajos del grupo 5, y lo que falta
+
 ## [2026-11-15] - Sexta revisión del reto de Punqee
 
 - docs: actualiza `score/punqee.md` tras la sexta revisión: la calificación actual sube de 8.3 a 8.8 / 10 (calidad de los PR y de los *commits* de 7 a 9 porque `check-pr.sh` ya pasa, y calidad técnica de 7 a 8 porque la pantalla completa del *multiview* funciona), el avance verificado se mantiene en 13 de las 18 tareas (se verifica la 4.2 y se reabre la 3.2 porque el panel 1 pasa por un tamaño intermedio al volver a un panel y pierde el *multiview*), la lista de la quinta revisión queda como atendida y se agrega la sección «Sexta revisión (15 de noviembre de 2026)» con lo que se le pide ahora: evitar ese tamaño intermedio, marcar la tarea 4.2, limitar el `MutationObserver` y seguir con el grupo 5

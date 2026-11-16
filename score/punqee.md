@@ -1,6 +1,6 @@
 # Evaluación del reto: Punqee
 
-*Última modificación: 15 de noviembre de 2026, 13:20 (CST)*
+*Última modificación: 16 de noviembre de 2026, 00:12 (CST)*
 
 Revisión de la entrega de Míriam ([@Punqee](https://github.com/Punqee)) al [reto de contribución](../CHALLENGE.md), hecha por el mantenedor con Claude Code (Opus 5.5) en una máquina con Windows. Registra lo que se ejecutó, lo que se observó y una propuesta de calificación con los criterios del reto.
 
@@ -121,14 +121,14 @@ Es la calificación vigente. Se actualiza cada vez que la participante entrega y
 
 | Criterio | Peso | Calificación | Motivo |
 |---|---|---|---|
-| Disciplina SDD | 30 % | 9 | Atendió cada revisión por la especificación antes que el código, documentó en la bitácora las causas de cada falla y dejó sin marcar lo que no pudo probar, como la 4.2 con *multiview*. |
-| Compila en otra máquina sin intervención | 25 % | 8 | Compiló en un clon nuevo siguiendo solo el README, con 0 advertencias y 0 errores, y volvió a compilar igual en la sexta entrega, con el script compartido copiado junto al ejecutable. No se volvió a probar la instalación del SDK ni la compilación en Visual Studio. |
+| Disciplina SDD | 30 % | 9 | Atendió cada revisión por la especificación antes que el código, documentó en la bitácora las causas de cada falla, dejó sin marcar lo que no pudo probar, como la 3.2 y la 4.2 con *multiview*, y cerró con una lista de verificación de paridad. Marcó la 5.3 sin poder correr `openspec validate`, aunque lo declaró. |
+| Compila en otra máquina sin intervención | 25 % | 9 | En dos clones nuevos, siguiendo solo el README, `windows\build.ps1` compiló con 0 advertencias y 0 errores en Windows PowerShell 5.1 y en PowerShell 7, sin caracteres corruptos y con el script compartido junto al ejecutable. No se volvió a probar la instalación del SDK, y la compilación en Visual Studio solo la verificó ella. |
 | Calidad de los PR y de los *commits* | 20 % | 9 | Pasa `check-pr.sh` sin fallos, los *commits* son atómicos, el CHANGELOG cambia solo en el último *commit* y el PR detalla qué probó y qué no. |
 | Honestidad | 15 % | 10 | Declara su cuenta de acceso limitado, su único monitor y lo que no probó, y atribuye al mantenedor lo que verificó él. |
-| Calidad técnica | 10 % | 8 | La ventana, los paneles, la sesión compartida entre instancias y la pantalla completa, incluido el *multiview*, funcionan, y encontró la causa de la falla de la hoja de estilo sin modificar el script compartido. Al volver a un panel, el panel 1 pasa por un tamaño intermedio y DAZN abandona el *multiview*; ese orden se lo pidió la cuarta revisión, así que no se le descuenta. |
-| **Total ponderado** | | **8.8 / 10** | |
+| Calidad técnica | 10 % | 9 | La ventana, los paneles, la sesión compartida entre instancias, la pantalla completa con *multiview* y los atajos funcionan. Resolvió el tamaño intermedio del panel 1 (el *multiview* sobrevive al cambiar de paneles) y la hoja de estilo sin modificar el script compartido. |
+| **Total ponderado** | | **9.2 / 10** | |
 
-Avance verificado: 13 de las 18 tareas del cambio `add-windows-port` (1.1 a 1.4, 2.1 a 2.3, 3.1, 3.3, 3.4 y 4.1 a 4.3). La 3.2 se reabre porque el *multiview* del panel 1 no sobrevive al volver de dos paneles a uno. Quedan la 3.2 y de la 5.1 a la 5.4.
+Avance verificado: 17 de las 18 tareas del cambio `add-windows-port` (1.1 a 1.4, 2.1 a 2.3, 3.1 a 3.4, 4.1 a 4.3, 5.1, 5.2 y 5.4). Queda la 5.3, con la documentación completa y pendiente solo de la validación de OpenSpec, que correrá el flujo de GitHub Actions del PR.
 
 ## Veredicto y siguientes pasos
 
@@ -245,12 +245,32 @@ El mantenedor revisó la rama en su último *commit*, `fix(windows): keep fullsc
   - **Falla:** al volver a un panel con `Ctrl+1`, el panel 1 se queda con un solo video. `debug.log` muestra que el panel 1 pasa un instante por 811 px, por debajo del ancho al que DAZN ofrece el *multiview*, antes de llegar a su tamaño final. El orden de macOS que te pidió la cuarta revisión no basta en WPF, así que no es una falla tuya.
 - **Tareas:** la 4.2 queda verificada; ya puedes marcarla. La 3.2 se reabre por el tamaño intermedio.
 
-**Qué se te pide ahora:**
+**Qué se pidió en la sexta revisión** (ya atendido en la séptima entrega):
 
 1. Evita el tamaño intermedio del panel 1 al cambiar de paneles, en especial al volver a uno, primero en `design.md` y `tasks.md` y después en el código. Una forma: fija la columna del panel 1 a su ancho en píxeles, cambia la ventana, agrega o quita la otra columna y al final devuelve la columna del panel 1 a `*`. No necesitas *multiview* para comprobarlo: con `--debug`, al cambiar de paneles `debug.log` debe registrar un solo `page:resize` del panel 1, sin uno a la mitad o al doble de su ancho. Agrega esa comprobación a la tarea 3.2; el mantenedor vuelve a probar el *multiview* con su cuenta.
 2. Marca la tarea 4.2 y anota en el PR que la verificó el mantenedor con *multiview*.
 3. Opcional: limita el `MutationObserver` a `<head>` y `documentElement`, en lugar de todo el documento.
 4. Sigue con el grupo 5 (atajos, paquete y documentación), igual que hasta ahora.
+
+## Séptima revisión (16 de noviembre de 2026)
+
+El mantenedor revisó la rama en su último *commit*, `docs(windows): document Windows build and usage in README and ROADMAP and record parity check`, ya sobre el `main` actual, y la probó por RDP con su cuenta. El detalle completo está en [review/2026-11-16_punqee_review.md](../review/2026-11-16_punqee_review.md). Resumen:
+
+- **Puertas:** `check-pr.sh` pasa sin fallos (OpenSpec sigue sin validarse por falta de Node en la máquina del mantenedor).
+- **Compilación:** `dotnet build windows\DAZNer.sln` y `windows\build.ps1` en dos clones nuevos, con Windows PowerShell 5.1 y con PowerShell 7, todos con 0 advertencias y 0 errores. Con esto queda cubierta la parte de PowerShell 7 que no pudiste probar.
+- **Atendido de la sexta revisión:** todo, incluida la sugerencia opcional del `MutationObserver`.
+- **Prueba del mantenedor: todo funciona.**
+  - El *multiview* de cuatro videos del panel 1 sobrevive a `Ctrl+2` y a `Ctrl+1`; `debug.log` muestra que el panel 1 solo cambia los 4 px del hueco.
+  - `Ctrl+R` y `Ctrl+H` actúan solo en el panel con foco.
+  - La edición de texto funciona en DAZN y en el diálogo de `Ctrl+L`.
+  - `Ctrl+W` cierra, `Ctrl+Q` sale, la sesión se conserva y el ícono aparece en la barra de tareas y en `Alt+Tab`.
+- **Tareas:** quedan verificadas la 3.2, la 5.1, la 5.2 y la 5.4. La 5.3 espera la validación de OpenSpec del flujo de GitHub Actions, que el mantenedor aprueba ahora que el PR está completo.
+
+**Qué se te pide ahora:**
+
+1. Marca la tarea 3.2 y anota en el PR que el mantenedor verificó el *multiview* con `Ctrl+2` y `Ctrl+1`.
+2. Corrige en `design.md` la lista de tamaños del ícono: en «Decisions» dice seis (sin 24 px) y el archivo trae siete.
+3. Si el flujo de GitHub Actions marca un error de OpenSpec, corrígelo. Si pasa, no hay nada más que hacer: el PR queda listo para integrarse.
 
 ## Cómo traer los cambios de `main` a tu rama
 
@@ -307,5 +327,6 @@ Tu Git de Windows suele convertir los archivos a CRLF, y eso ensucia el reposito
 | Sistema | Windows 11 Pro 10.0.26300 |
 | SDK de .NET | 10.0.403 (instalado durante la revisión) |
 | *Runtime* de WebView2 | 157.0.4341.42 |
+| Windows PowerShell y PowerShell | 5.1 y 7 |
 | Visual Studio | No instalado |
 | Git | 2.55.0 para Windows, con `.gitattributes` y la configuración de `/git-init` |
