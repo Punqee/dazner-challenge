@@ -1013,6 +1013,32 @@ namespace DAZNer
             }
         }
 
+        public void ReloadFocusedPane()
+        {
+            var activePane = GetPane(_focusedPane);
+            if (activePane?.CoreWebView2 != null)
+            {
+                activePane.CoreWebView2.Reload();
+            }
+            else
+            {
+                activePane?.Reload();
+            }
+        }
+
+        public void NavigateHomeFocusedPane()
+        {
+            var activePane = GetPane(_focusedPane);
+            if (activePane?.CoreWebView2 != null)
+            {
+                activePane.CoreWebView2.Navigate(HomeUrl);
+            }
+            else if (activePane != null)
+            {
+                activePane.Source = new Uri(HomeUrl);
+            }
+        }
+
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (Keyboard.Modifiers == ModifierKeys.Control)
@@ -1037,6 +1063,16 @@ namespace DAZNer
                     OpenUrlDialog();
                     e.Handled = true;
                 }
+                else if (e.Key == Key.R)
+                {
+                    ReloadFocusedPane();
+                    e.Handled = true;
+                }
+                else if (e.Key == Key.H)
+                {
+                    NavigateHomeFocusedPane();
+                    e.Handled = true;
+                }
                 else if (e.Key == Key.F)
                 {
                     FillAndCenter();
@@ -1045,6 +1081,16 @@ namespace DAZNer
                 else if (e.Key == Key.T)
                 {
                     ToggleAlwaysOnTop();
+                    e.Handled = true;
+                }
+                else if (e.Key == Key.W)
+                {
+                    Close();
+                    e.Handled = true;
+                }
+                else if (e.Key == Key.Q)
+                {
+                    Application.Current.Shutdown();
                     e.Handled = true;
                 }
             }
