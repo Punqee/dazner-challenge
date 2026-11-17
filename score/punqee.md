@@ -1,6 +1,6 @@
 # Evaluación del reto: Punqee
 
-*Última modificación: 16 de noviembre de 2026, 00:12 (CST)*
+*Última modificación: 16 de noviembre de 2026, 19:40 (CST)*
 
 Revisión de la entrega de Míriam ([@Punqee](https://github.com/Punqee)) al [reto de contribución](../CHALLENGE.md), hecha por el mantenedor con Claude Code (Opus 5.5) en una máquina con Windows. Registra lo que se ejecutó, lo que se observó y una propuesta de calificación con los criterios del reto.
 
@@ -128,7 +128,9 @@ Es la calificación vigente. Se actualiza cada vez que la participante entrega y
 | Calidad técnica | 10 % | 9 | La ventana, los paneles, la sesión compartida entre instancias, la pantalla completa con *multiview* y los atajos funcionan. Resolvió el tamaño intermedio del panel 1 (el *multiview* sobrevive al cambiar de paneles) y la hoja de estilo sin modificar el script compartido. |
 | **Total ponderado** | | **9.2 / 10** | |
 
-Avance verificado: 17 de las 18 tareas del cambio `add-windows-port` (1.1 a 1.4, 2.1 a 2.3, 3.1 a 3.4, 4.1 a 4.3, 5.1, 5.2 y 5.4). Queda la 5.3, con la documentación completa y pendiente solo de la validación de OpenSpec, que correrá el flujo de GitHub Actions del PR.
+Es la calificación final del cambio `add-windows-port`, sujeta a que el flujo de GitHub Actions del PR valide OpenSpec sin errores.
+
+Avance verificado: 17 de las 18 tareas del cambio `add-windows-port` (1.1 a 1.4, 2.1 a 2.3, 3.1 a 3.4, 4.1 a 4.3, 5.1, 5.2 y 5.4), y las 18 marcadas en `tasks.md`. Queda la 5.3, con la documentación completa y pendiente solo de la validación de OpenSpec, que correrá el flujo de GitHub Actions del PR.
 
 ## Veredicto y siguientes pasos
 
@@ -266,11 +268,23 @@ El mantenedor revisó la rama en su último *commit*, `docs(windows): document W
   - `Ctrl+W` cierra, `Ctrl+Q` sale, la sesión se conserva y el ícono aparece en la barra de tareas y en `Alt+Tab`.
 - **Tareas:** quedan verificadas la 3.2, la 5.1, la 5.2 y la 5.4. La 5.3 espera la validación de OpenSpec del flujo de GitHub Actions, que el mantenedor aprueba ahora que el PR está completo.
 
-**Qué se te pide ahora:**
+**Qué se pidió en la séptima revisión** (ya atendido en la octava entrega):
 
 1. Marca la tarea 3.2 y anota en el PR que el mantenedor verificó el *multiview* con `Ctrl+2` y `Ctrl+1`.
 2. Corrige en `design.md` la lista de tamaños del ícono: en «Decisions» dice seis (sin 24 px) y el archivo trae siete.
 3. Si el flujo de GitHub Actions marca un error de OpenSpec, corrígelo. Si pasa, no hay nada más que hacer: el PR queda listo para integrarse.
+
+## Octava revisión y cierre (16 de noviembre de 2026)
+
+El mantenedor revisó la rama en su último *commit*, `docs(windows): update design and tasks following seventh review`, ya sobre el `main` actual. Es la última revisión del cambio `add-windows-port`. El detalle completo, con el resumen de todo el cambio, está en [review/2026-11-16_punqee_review_2.md](../review/2026-11-16_punqee_review_2.md). Resumen:
+
+- **Puertas:** `check-pr.sh` pasa sin fallos; el CHANGELOG solo agrega líneas y no hay archivos con CRLF ni ajenos.
+- **Atendido de la séptima revisión:** todo. La 3.2 está marcada, el ícono tiene sus siete tamaños en `design.md` y PowerShell 7 queda como verificado por el mantenedor. El código no cambió, así que no hizo falta repetir la prueba.
+- **Tareas:** las 18 están marcadas. El mantenedor verificó 17 en su equipo; la 5.3 espera solo la validación de OpenSpec del flujo de GitHub Actions.
+- **Calificación final: 9.2 / 10**, sujeta a que ese flujo pase.
+- ***Referral*:** el PR compila y arranca sin intervención y cumple las demás reglas, así que corresponde según CHALLENGE.md.
+
+**Qué falta:** nada de tu parte, salvo que el flujo de GitHub Actions marque un error de OpenSpec; en ese caso, corrígelo en tu rama como hasta ahora. Si pasa, el mantenedor integra el PR. Gracias por tu trabajo: llevaste la versión de Windows de la prueba de reproducción a la paridad con macOS, revisión por revisión.
 
 ## Cómo traer los cambios de `main` a tu rama
 
