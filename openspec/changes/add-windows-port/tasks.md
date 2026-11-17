@@ -16,7 +16,7 @@
 ## 3. Paneles
 
 - [x] 3.1 Modo de uno y dos paneles con hueco de 8 px dentro del ancho de la ventana; verificar las medidas del escenario de «Hueco entre paneles» (solo se puede verificar en Windows).
-- [ ] 3.2 Crear el segundo panel a demanda y liberarlo al volver a uno, sin refrescar el primero ni pasar por un tamaño intermedio; verificar que el primer panel sigue reproduciendo, que el proceso del segundo desaparece del Administrador de tareas, que con `--debug` al cambiar de paneles `debug.log` registra un solo `page:resize` del panel 1 (sin uno a la mitad o al doble de su ancho) y que el *multiview* con cuatro videos sobrevive a `Ctrl+2` y a `Ctrl+1` (solo se puede verificar en Windows).
+- [x] 3.2 Crear el segundo panel a demanda y liberarlo al volver a uno, sin refrescar el primero ni pasar por un tamaño intermedio; verificar que el primer panel sigue reproduciendo, que el proceso del segundo desaparece del Administrador de tareas, que con `--debug` al cambiar de paneles `debug.log` registra un solo `page:resize` del panel 1 (sin uno a la mitad o al doble de su ancho) y que el *multiview* con cuatro videos sobrevive a `Ctrl+2` y a `Ctrl+1` (solo se puede verificar en Windows).
 - [x] 3.3 Audio por foco con `IsMuted`, cambio de panel y abrir dirección; verificar los escenarios de «Audio por foco» y de abrir dirección (solo se puede verificar en Windows).
 - [x] 3.4 Abrir en el mismo panel los enlaces de ventana nueva; verificar el escenario de `playback` (solo se puede verificar en Windows).
 
